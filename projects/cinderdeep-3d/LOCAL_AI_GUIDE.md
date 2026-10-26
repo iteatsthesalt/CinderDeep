@@ -8,16 +8,16 @@ This guide is meant to be used by your local coding AI. The workspace already co
 2. Clone the CinderDeep GitHub repo with your normal GitHub workflow.
 3. Open the folder projects/cinderdeep-3d as the local AI workspace. Do not open the whole repository as the game workspace.
 4. Do not run git submodule update. The repository root includes an unrelated catalog of upstream projects; the game does not use them.
-5. Ask the AI to read AGENTS.md, GAMEPLAY_SPEC.md and this guide.
+5. Ask the AI to read AGENTS.md, GAMEPLAY_SPEC.md, SYSTEMS_CATALOG.md and this guide.
 
 The project uses npm packages: Three.js for the 3D world, GSAP for animation, and Vite for local development. In the project folder, the usual commands will be npm install, npm run dev, and npm run build.
 
 ## Step 2 — Start the AI with this copy/paste prompt
 
 ~~~text
-Read AGENTS.md, GAMEPLAY_SPEC.md, and LOCAL_AI_GUIDE.md fully. This is a clean CinderDeep 3D rebuild. No old CinderDeep HTML, code, or assets are in scope and nothing from the upstream catalog is needed.
+Read AGENTS.md, GAMEPLAY_SPEC.md, SYSTEMS_CATALOG.md, and LOCAL_AI_GUIDE.md fully. This is a clean CinderDeep 3D rebuild. No old CinderDeep HTML, code, or assets are in scope and nothing from the upstream catalog is needed.
 
-Do not stop after a plan. Build the game in this workspace autonomously, in small working increments. First establish a maintainable Three.js + Vite architecture and build the vertical slice in GAMEPLAY_SPEC.md: a polished 3D Ossuary combat room, player movement/aim/attack/dash, two telegraphed enemy behaviors, XP and a level-up choice, a sealed room that opens after combat, HUD, pause, and death flow. Use GSAP visibly for menu/boss/room transitions and smooth camera response.
+Do not stop after a plan. Build the game in this workspace autonomously, in small working increments. First establish a maintainable Three.js + Vite architecture and build the first playable milestone from empty source files in GAMEPLAY_SPEC.md: a polished 3D Ossuary combat room, player movement/aim/attack/dash, two telegraphed enemy behaviors, XP and a level-up choice, a sealed room that opens after combat, HUD, pause, and death flow. Use GSAP visibly for menu/boss/room transitions and smooth camera response.
 
 After the slice works, continue through the milestones in LOCAL_AI_GUIDE.md without waiting for me to paste each prompt. Follow the current CDC-V8 permanent-death, ten-descents and Shared Talent Atlas rules. Run npm install, build the app, launch it when possible, inspect the result, fix errors, and keep going until the acceptance checklist in AGENTS.md is met. Keep all changes inside this folder. Do not copy legacy source or assets.
 ~~~
@@ -26,16 +26,16 @@ After the slice works, continue through the milestones in LOCAL_AI_GUIDE.md with
 
 The master prompt asks the AI to continue through all work. If your local AI stops after the first slice or needs smaller tasks, paste one stage at a time.
 
-### A. Finish the runnable skeleton
+### A. Build the project from a blank source tree
 
 ~~~text
-Read the project instructions and spec. Create the Vite entry files, install from package.json, separate the renderer, game state, input, world, combat, UI and content into maintainable modules, then run npm run build and fix all errors. Make sure the app opens into a useful CinderDeep title screen and the 3D scene resizes correctly.
+Read the project instructions, gameplay spec, and complete systems catalog. Create the Vite entry files, install from package.json, separate the renderer, game state, input, world, combat, UI and content into maintainable modules, then run npm run build and fix all errors. Make sure the app opens into a useful CinderDeep title screen and the 3D scene resizes correctly.
 ~~~
 
 ### B. Complete the first combat slice
 
 ~~~text
-Build and polish the Ossuary vertical slice from the spec. Implement a real 3D room, one controllable hero, mouse aim, keyboard movement, attack, dash, one ability, two enemy behaviors with visible telegraphs, health/damage, XP, one level-up choice, sealed doors that reopen when combat is cleared, pickups, HUD, pause and death flow. Use GSAP for title and room transitions and camera easing. Keep the build runnable and fix issues before expanding.
+Create the first complete playable Ossuary encounter entirely from empty source files from the spec. Implement a real 3D room, one controllable hero, mouse aim, keyboard movement, attack, dash, one ability, two enemy behaviors with visible telegraphs, health/damage, XP, one level-up choice, sealed doors that reopen when combat is cleared, pickups, HUD, pause and death flow. Use GSAP for title and room transitions and camera easing. Keep the build runnable and fix issues before expanding.
 ~~~
 
 ### C. Expand the full descent and combat builds

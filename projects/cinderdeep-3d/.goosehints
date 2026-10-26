@@ -1,10 +1,10 @@
 # CinderDeep 3D workspace instructions for Goose
 
-This folder is the standalone, fresh-code workspace for CinderDeep 3D. Start by reading AGENTS.md, GAMEPLAY_SPEC.md, and LOCAL_AI_GUIDE.md.
+This folder is the standalone, fresh-code workspace for CinderDeep 3D. Start by reading AGENTS.md, GAMEPLAY_SPEC.md, SYSTEMS_CATALOG.md, and LOCAL_AI_GUIDE.md.
 
-Build the game from the brief in this folder. Do not look for, copy, or import old Cinderdeep HTML, scripts, or artwork. Do not edit files outside projects/cinderdeep-3d or initialize the repository's unrelated upstream submodules.
+Build the game from the brief in this folder. Do not continue or modify the earlier game file or any earlier AI-made 3D slice. Do not look for, copy, or import old Cinderdeep HTML, scripts, or artwork. Do not edit files outside projects/cinderdeep-3d or initialize the repository's unrelated upstream submodules.
 
-The world must be real 3D rendered with Three.js. GSAP is required for meaningful in-game/UI animation. Keep the project modular and data-driven. Implement a polished playable vertical slice first, then continue through the guide's milestones without stopping at a plan.
+The world must be real 3D rendered with Three.js. GSAP is required for meaningful in-game/UI animation. Keep the project modular and data-driven. Create the first playable encounter entirely from empty source files, then continue through the guide's milestones without stopping at a plan.
 
 Honor the current CDC-V8 life rules: permanent death, ten survived descents to unlock the Realm for that life, and one account-wide Shared Talent Atlas that persists across lives. Never add respawn or resurrection.
 

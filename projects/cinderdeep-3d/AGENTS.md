@@ -4,12 +4,12 @@ You are working on the fresh CinderDeep 3D game inside this folder.
 
 ## Read before changing files
 
-Read GAMEPLAY_SPEC.md and LOCAL_AI_GUIDE.md before implementation. GAMEPLAY_SPEC.md is the product contract. If two historical descriptions conflict, use the CDC-V8 rules in its "Current life and progression rules" section.
+Read GAMEPLAY_SPEC.md, SYSTEMS_CATALOG.md and LOCAL_AI_GUIDE.md before implementation. GAMEPLAY_SPEC.md is the product contract. If two historical descriptions conflict, use the CDC-V8 rules in its "Current life and progression rules" section.
 
 ## Scope and clean start
 
 - Work only inside projects/cinderdeep-3d. Do not edit the repository's catalog, upstream/, .gitmodules, provenance, or root source catalog as part of game implementation.
-- This is a fresh rebuild. Do not copy, import, scrape, or vendor old Cinderdeep source files, old output HTML, or old assets. There are no legacy game files in this workspace.
+- This is a fresh rebuild from an empty game-code directory. Do not continue, patch, import, scrape, or vendor the old Cinderdeep source, the earlier AI-made 3D output, or any prior prototype/artifact. There are no legacy game files in this workspace.
 - The root repository contains a catalog of upstream repositories. Do not run git submodule update. You do not need those repositories to build the game.
 - Treat the supplied design brief here as sufficient context. Do not block on access to an old HTML file.
 
@@ -27,7 +27,7 @@ Read GAMEPLAY_SPEC.md and LOCAL_AI_GUIDE.md before implementation. GAMEPLAY_SPEC
 ## How to work
 
 1. Inspect this folder, read the two project documents, and summarize the implementation steps briefly.
-2. Continue past the summary: implement the project in working increments, starting with a polished vertical slice of one combat room.
+2. Continue past the summary: implement the project in working increments, starting from empty source files and creating the first new end-to-end dungeon encounter.
 3. After each milestone, run npm run build and launch the dev server or browser when available. Fix issues before adding more content.
 4. Continue through all milestones in LOCAL_AI_GUIDE.md without waiting for the user to paste each prompt. Ask only if a decision truly cannot be inferred from the brief.
 5. Keep package-lock.json committed once dependencies are installed. Do not commit node_modules or dist.
