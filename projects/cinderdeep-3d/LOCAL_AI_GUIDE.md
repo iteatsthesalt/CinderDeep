@@ -19,12 +19,12 @@ Read AGENTS.md, GAMEPLAY_SPEC.md, SYSTEMS_CATALOG.md, and LOCAL_AI_GUIDE.md full
 
 Do not stop after a plan. Build the game in this workspace autonomously, in small working increments. First establish a maintainable Three.js + Vite architecture and build the first playable milestone from empty source files in GAMEPLAY_SPEC.md: a polished 3D Ossuary combat room, player movement/aim/attack/dash, two telegraphed enemy behaviors, XP and a level-up choice, a sealed room that opens after combat, HUD, pause, and death flow. Use GSAP visibly for menu/boss/room transitions and smooth camera response.
 
-After the slice works, continue through the milestones in LOCAL_AI_GUIDE.md without waiting for me to paste each prompt. Follow the current CDC-V8 permanent-death, ten-descents and Shared Talent Atlas rules. Run npm install, build the app, launch it when possible, inspect the result, fix errors, and keep going until the acceptance checklist in AGENTS.md is met. Keep all changes inside this folder. Do not copy legacy source or assets.
+After the encounter works, continue through the milestones in LOCAL_AI_GUIDE.md without waiting for me to paste each prompt. Follow the current CDC-V8 permanent-death, ten-descents and Shared Talent Atlas rules. Run npm install, build the app, launch it when possible, inspect the result, fix errors, and keep going until the acceptance checklist in AGENTS.md is met. Keep all changes inside this folder. Do not copy legacy source or assets.
 ~~~
 
 ## Step 3 — If your AI needs staged prompts
 
-The master prompt asks the AI to continue through all work. If your local AI stops after the first slice or needs smaller tasks, paste one stage at a time.
+The master prompt asks the AI to continue through all work. If your local AI stops after the first encounter or needs smaller tasks, paste one stage at a time.
 
 ### A. Build the project from a blank source tree
 
@@ -32,7 +32,7 @@ The master prompt asks the AI to continue through all work. If your local AI sto
 Read the project instructions, gameplay spec, and complete systems catalog. Create the Vite entry files, install from package.json, separate the renderer, game state, input, world, combat, UI and content into maintainable modules, then run npm run build and fix all errors. Make sure the app opens into a useful CinderDeep title screen and the 3D scene resizes correctly.
 ~~~
 
-### B. Complete the first combat slice
+### B. Complete the first combat encounter
 
 ~~~text
 Create the first complete playable Ossuary encounter entirely from empty source files from the spec. Implement a real 3D room, one controllable hero, mouse aim, keyboard movement, attack, dash, one ability, two enemy behaviors with visible telegraphs, health/damage, XP, one level-up choice, sealed doors that reopen when combat is cleared, pickups, HUD, pause and death flow. Use GSAP for title and room transitions and camera easing. Keep the build runnable and fix issues before expanding.
@@ -41,7 +41,7 @@ Create the first complete playable Ossuary encounter entirely from empty source 
 ### C. Expand the full descent and combat builds
 
 ~~~text
-Continue from the working slice. Implement branching floor maps and room types, room clear/exit rules, loot, shops, shrines, forge, keys, hazards, elites and secrets. Add the four regions, their visual/material palettes and hazards, and the Bone Colossus, Mother Sporecap, Rime Wyrm and Cinder King boss fights. Use data-driven enemy and boss definitions. Preserve frame rate and readability.
+Continue from the working encounter. Implement branching floor maps and room types, room clear/exit rules, loot, shops, shrines, forge, keys, hazards, elites and secrets. Add the four regions, their visual/material palettes and hazards, and the Bone Colossus, Mother Sporecap, Rime Wyrm and Cinder King boss fights. Use data-driven enemy and boss definitions. Preserve frame rate and readability.
 ~~~
 
 ~~~text
