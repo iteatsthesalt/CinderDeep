@@ -1,0 +1,527 @@
+[submodule "upstream/dimforge/aisle"]
+	path = upstream/dimforge/aisle
+	url = https://github.com/dimforge/aisle.git
+
+[submodule "upstream/dimforge/alga"]
+	path = upstream/dimforge/alga
+	url = https://github.com/dimforge/alga.git
+
+[submodule "upstream/dimforge/bevy_rapier"]
+	path = upstream/dimforge/bevy_rapier
+	url = https://github.com/dimforge/bevy_rapier.git
+
+[submodule "upstream/dimforge/bevy_salva"]
+	path = upstream/dimforge/bevy_salva
+	url = https://github.com/dimforge/bevy_salva.git
+
+[submodule "upstream/dimforge/bevy_wgsparkl"]
+	path = upstream/dimforge/bevy_wgsparkl
+	url = https://github.com/dimforge/bevy_wgsparkl.git
+
+[submodule "upstream/dimforge/dimforge-bench"]
+	path = upstream/dimforge/dimforge-bench
+	url = https://github.com/dimforge/dimforge-bench.git
+
+[submodule "upstream/dimforge/distributed-physics-prototype"]
+	path = upstream/dimforge/distributed-physics-prototype
+	url = https://github.com/dimforge/distributed-physics-prototype.git
+
+[submodule "upstream/dimforge/github-ci-secrets-test"]
+	path = upstream/dimforge/github-ci-secrets-test
+	url = https://github.com/dimforge/github-ci-secrets-test.git
+
+[submodule "upstream/dimforge/glamx"]
+	path = upstream/dimforge/glamx
+	url = https://github.com/dimforge/glamx.git
+
+[submodule "upstream/dimforge/inferi"]
+	path = upstream/dimforge/inferi
+	url = https://github.com/dimforge/inferi.git
+
+[submodule "upstream/dimforge/inferi-ohos"]
+	path = upstream/dimforge/inferi-ohos
+	url = https://github.com/dimforge/inferi-ohos.git
+
+[submodule "upstream/dimforge/khal"]
+	path = upstream/dimforge/khal
+	url = https://github.com/dimforge/khal.git
+
+[submodule "upstream/dimforge/kiss3d"]
+	path = upstream/dimforge/kiss3d
+	url = https://github.com/dimforge/kiss3d.git
+
+[submodule "upstream/dimforge/nalgebra"]
+	path = upstream/dimforge/nalgebra
+	url = https://github.com/dimforge/nalgebra.git
+
+[submodule "upstream/dimforge/nalgebra.rs"]
+	path = upstream/dimforge/nalgebra.rs
+	url = https://github.com/dimforge/nalgebra.rs.git
+
+[submodule "upstream/dimforge/ncollide"]
+	path = upstream/dimforge/ncollide
+	url = https://github.com/dimforge/ncollide.git
+
+[submodule "upstream/dimforge/ncollide.org"]
+	path = upstream/dimforge/ncollide.org
+	url = https://github.com/dimforge/ncollide.org.git
+
+[submodule "upstream/dimforge/nexus"]
+	path = upstream/dimforge/nexus
+	url = https://github.com/dimforge/nexus.git
+
+[submodule "upstream/dimforge/nphysics"]
+	path = upstream/dimforge/nphysics
+	url = https://github.com/dimforge/nphysics.git
+
+[submodule "upstream/dimforge/nphysics.org"]
+	path = upstream/dimforge/nphysics.org
+	url = https://github.com/dimforge/nphysics.org.git
+
+[submodule "upstream/dimforge/parry"]
+	path = upstream/dimforge/parry
+	url = https://github.com/dimforge/parry.git
+
+[submodule "upstream/dimforge/parry.rs"]
+	path = upstream/dimforge/parry.rs
+	url = https://github.com/dimforge/parry.rs.git
+
+[submodule "upstream/dimforge/physmark"]
+	path = upstream/dimforge/physmark
+	url = https://github.com/dimforge/physmark.git
+
+[submodule "upstream/dimforge/rapier"]
+	path = upstream/dimforge/rapier
+	url = https://github.com/dimforge/rapier.git
+
+[submodule "upstream/dimforge/rapier.js"]
+	path = upstream/dimforge/rapier.js
+	url = https://github.com/dimforge/rapier.js.git
+
+[submodule "upstream/dimforge/rapier.rs"]
+	path = upstream/dimforge/rapier.rs
+	url = https://github.com/dimforge/rapier.rs.git
+
+[submodule "upstream/dimforge/rustsim.org"]
+	path = upstream/dimforge/rustsim.org
+	url = https://github.com/dimforge/rustsim.org.git
+
+[submodule "upstream/dimforge/salva"]
+	path = upstream/dimforge/salva
+	url = https://github.com/dimforge/salva.git
+
+[submodule "upstream/dimforge/salva.rs"]
+	path = upstream/dimforge/salva.rs
+	url = https://github.com/dimforge/salva.rs.git
+
+[submodule "upstream/dimforge/simba"]
+	path = upstream/dimforge/simba
+	url = https://github.com/dimforge/simba.git
+
+[submodule "upstream/dimforge/slai"]
+	path = upstream/dimforge/slai
+	url = https://github.com/dimforge/slai.git
+
+[submodule "upstream/dimforge/slang-hal"]
+	path = upstream/dimforge/slang-hal
+	url = https://github.com/dimforge/slang-hal.git
+
+[submodule "upstream/dimforge/slosh"]
+	path = upstream/dimforge/slosh
+	url = https://github.com/dimforge/slosh.git
+
+[submodule "upstream/dimforge/sparkl"]
+	path = upstream/dimforge/sparkl
+	url = https://github.com/dimforge/sparkl.git
+
+[submodule "upstream/dimforge/Steadyum"]
+	path = upstream/dimforge/Steadyum
+	url = https://github.com/dimforge/Steadyum.git
+
+[submodule "upstream/dimforge/stensor"]
+	path = upstream/dimforge/stensor
+	url = https://github.com/dimforge/stensor.git
+
+[submodule "upstream/dimforge/vortx"]
+	path = upstream/dimforge/vortx
+	url = https://github.com/dimforge/vortx.git
+
+[submodule "upstream/dimforge/wgmath.rs"]
+	path = upstream/dimforge/wgmath.rs
+	url = https://github.com/dimforge/wgmath.rs.git
+
+[submodule "upstream/dimforge/wgsparkl"]
+	path = upstream/dimforge/wgsparkl
+	url = https://github.com/dimforge/wgsparkl.git
+
+[submodule "upstream/gists/dmnsgn/76878ba6903cf15789b712464875cfdc"]
+	path = upstream/gists/dmnsgn/76878ba6903cf15789b712464875cfdc
+	url = https://gist.github.com/76878ba6903cf15789b712464875cfdc.git
+
+[submodule "upstream/mrdoob/three.js"]
+	path = upstream/mrdoob/three.js
+	url = https://github.com/mrdoob/three.js.git
+
+[submodule "upstream/playcanvas/ammo.js"]
+	path = upstream/playcanvas/ammo.js
+	url = https://github.com/playcanvas/ammo.js.git
+
+[submodule "upstream/playcanvas/api-reference"]
+	path = upstream/playcanvas/api-reference
+	url = https://github.com/playcanvas/api-reference.git
+
+[submodule "upstream/playcanvas/attribute-parser"]
+	path = upstream/playcanvas/attribute-parser
+	url = https://github.com/playcanvas/attribute-parser.git
+
+[submodule "upstream/playcanvas/awesome-playcanvas"]
+	path = upstream/playcanvas/awesome-playcanvas
+	url = https://github.com/playcanvas/awesome-playcanvas.git
+
+[submodule "upstream/playcanvas/basis_universal"]
+	path = upstream/playcanvas/basis_universal
+	url = https://github.com/playcanvas/basis_universal.git
+
+[submodule "upstream/playcanvas/BitBucket-api"]
+	path = upstream/playcanvas/BitBucket-api
+	url = https://github.com/playcanvas/BitBucket-api.git
+
+[submodule "upstream/playcanvas/blog"]
+	path = upstream/playcanvas/blog
+	url = https://github.com/playcanvas/blog.git
+
+[submodule "upstream/playcanvas/canvas-mock"]
+	path = upstream/playcanvas/canvas-mock
+	url = https://github.com/playcanvas/canvas-mock.git
+
+[submodule "upstream/playcanvas/cloud-git"]
+	path = upstream/playcanvas/cloud-git
+	url = https://github.com/playcanvas/cloud-git.git
+
+[submodule "upstream/playcanvas/codemods"]
+	path = upstream/playcanvas/codemods
+	url = https://github.com/playcanvas/codemods.git
+
+[submodule "upstream/playcanvas/colmap"]
+	path = upstream/playcanvas/colmap
+	url = https://github.com/playcanvas/colmap.git
+
+[submodule "upstream/playcanvas/create-playcanvas"]
+	path = upstream/playcanvas/create-playcanvas
+	url = https://github.com/playcanvas/create-playcanvas.git
+
+[submodule "upstream/playcanvas/developer-site"]
+	path = upstream/playcanvas/developer-site
+	url = https://github.com/playcanvas/developer-site.git
+
+[submodule "upstream/playcanvas/earthatile"]
+	path = upstream/playcanvas/earthatile
+	url = https://github.com/playcanvas/earthatile.git
+
+[submodule "upstream/playcanvas/editor"]
+	path = upstream/playcanvas/editor
+	url = https://github.com/playcanvas/editor.git
+
+[submodule "upstream/playcanvas/editor-api"]
+	path = upstream/playcanvas/editor-api
+	url = https://github.com/playcanvas/editor-api.git
+
+[submodule "upstream/playcanvas/editor-mcp-server"]
+	path = upstream/playcanvas/editor-mcp-server
+	url = https://github.com/playcanvas/editor-mcp-server.git
+
+[submodule "upstream/playcanvas/editor-test"]
+	path = upstream/playcanvas/editor-test
+	url = https://github.com/playcanvas/editor-test.git
+
+[submodule "upstream/playcanvas/engine"]
+	path = upstream/playcanvas/engine
+	url = https://github.com/playcanvas/engine.git
+
+[submodule "upstream/playcanvas/eslint-config"]
+	path = upstream/playcanvas/eslint-config
+	url = https://github.com/playcanvas/eslint-config.git
+
+[submodule "upstream/playcanvas/etc2comp"]
+	path = upstream/playcanvas/etc2comp
+	url = https://github.com/playcanvas/etc2comp.git
+
+[submodule "upstream/playcanvas/FasTC"]
+	path = upstream/playcanvas/FasTC
+	url = https://github.com/playcanvas/FasTC.git
+
+[submodule "upstream/playcanvas/FlappyBird"]
+	path = upstream/playcanvas/FlappyBird
+	url = https://github.com/playcanvas/FlappyBird.git
+
+[submodule "upstream/playcanvas/font-tools"]
+	path = upstream/playcanvas/font-tools
+	url = https://github.com/playcanvas/font-tools.git
+
+[submodule "upstream/playcanvas/fonts"]
+	path = upstream/playcanvas/fonts
+	url = https://github.com/playcanvas/fonts.git
+
+[submodule "upstream/playcanvas/gaussian-splatting"]
+	path = upstream/playcanvas/gaussian-splatting
+	url = https://github.com/playcanvas/gaussian-splatting.git
+
+[submodule "upstream/playcanvas/gm"]
+	path = upstream/playcanvas/gm
+	url = https://github.com/playcanvas/gm.git
+
+[submodule "upstream/playcanvas/google-play-game-services"]
+	path = upstream/playcanvas/google-play-game-services
+	url = https://github.com/playcanvas/google-play-game-services.git
+
+[submodule "upstream/playcanvas/ImageMagick"]
+	path = upstream/playcanvas/ImageMagick
+	url = https://github.com/playcanvas/ImageMagick.git
+
+[submodule "upstream/playcanvas/inspector"]
+	path = upstream/playcanvas/inspector
+	url = https://github.com/playcanvas/inspector.git
+
+[submodule "upstream/playcanvas/json0"]
+	path = upstream/playcanvas/json0
+	url = https://github.com/playcanvas/json0.git
+
+[submodule "upstream/playcanvas/livedb"]
+	path = upstream/playcanvas/livedb
+	url = https://github.com/playcanvas/livedb.git
+
+[submodule "upstream/playcanvas/livedb-mongo"]
+	path = upstream/playcanvas/livedb-mongo
+	url = https://github.com/playcanvas/livedb-mongo.git
+
+[submodule "upstream/playcanvas/markdown-translator"]
+	path = upstream/playcanvas/markdown-translator
+	url = https://github.com/playcanvas/markdown-translator.git
+
+[submodule "upstream/playcanvas/model-viewer"]
+	path = upstream/playcanvas/model-viewer
+	url = https://github.com/playcanvas/model-viewer.git
+
+[submodule "upstream/playcanvas/msdfgen"]
+	path = upstream/playcanvas/msdfgen
+	url = https://github.com/playcanvas/msdfgen.git
+
+[submodule "upstream/playcanvas/msdfgen-wasm"]
+	path = upstream/playcanvas/msdfgen-wasm
+	url = https://github.com/playcanvas/msdfgen-wasm.git
+
+[submodule "upstream/playcanvas/newsletter"]
+	path = upstream/playcanvas/newsletter
+	url = https://github.com/playcanvas/newsletter.git
+
+[submodule "upstream/playcanvas/observer"]
+	path = upstream/playcanvas/observer
+	url = https://github.com/playcanvas/observer.git
+
+[submodule "upstream/playcanvas/ot-text"]
+	path = upstream/playcanvas/ot-text
+	url = https://github.com/playcanvas/ot-text.git
+
+[submodule "upstream/playcanvas/parse-comments"]
+	path = upstream/playcanvas/parse-comments
+	url = https://github.com/playcanvas/parse-comments.git
+
+[submodule "upstream/playcanvas/pcui"]
+	path = upstream/playcanvas/pcui
+	url = https://github.com/playcanvas/pcui.git
+
+[submodule "upstream/playcanvas/pcui-graph"]
+	path = upstream/playcanvas/pcui-graph
+	url = https://github.com/playcanvas/pcui-graph.git
+
+[submodule "upstream/playcanvas/playcanvas-ar"]
+	path = upstream/playcanvas/playcanvas-ar
+	url = https://github.com/playcanvas/playcanvas-ar.git
+
+[submodule "upstream/playcanvas/playcanvas-csp"]
+	path = upstream/playcanvas/playcanvas-csp
+	url = https://github.com/playcanvas/playcanvas-csp.git
+
+[submodule "upstream/playcanvas/playcanvas-editor-ts-template"]
+	path = upstream/playcanvas/playcanvas-editor-ts-template
+	url = https://github.com/playcanvas/playcanvas-editor-ts-template.git
+
+[submodule "upstream/playcanvas/playcanvas-facebook"]
+	path = upstream/playcanvas/playcanvas-facebook
+	url = https://github.com/playcanvas/playcanvas-facebook.git
+
+[submodule "upstream/playcanvas/playcanvas-gltf"]
+	path = upstream/playcanvas/playcanvas-gltf
+	url = https://github.com/playcanvas/playcanvas-gltf.git
+
+[submodule "upstream/playcanvas/playcanvas-inspector"]
+	path = upstream/playcanvas/playcanvas-inspector
+	url = https://github.com/playcanvas/playcanvas-inspector.git
+
+[submodule "upstream/playcanvas/playcanvas-jsdoc-template"]
+	path = upstream/playcanvas/playcanvas-jsdoc-template
+	url = https://github.com/playcanvas/playcanvas-jsdoc-template.git
+
+[submodule "upstream/playcanvas/playcanvas-p2.js"]
+	path = upstream/playcanvas/playcanvas-p2.js
+	url = https://github.com/playcanvas/playcanvas-p2.js.git
+
+[submodule "upstream/playcanvas/playcanvas-rest-api-tools"]
+	path = upstream/playcanvas/playcanvas-rest-api-tools
+	url = https://github.com/playcanvas/playcanvas-rest-api-tools.git
+
+[submodule "upstream/playcanvas/playcanvas-spine"]
+	path = upstream/playcanvas/playcanvas-spine
+	url = https://github.com/playcanvas/playcanvas-spine.git
+
+[submodule "upstream/playcanvas/playcanvas-sync"]
+	path = upstream/playcanvas/playcanvas-sync
+	url = https://github.com/playcanvas/playcanvas-sync.git
+
+[submodule "upstream/playcanvas/playcanvas-tween"]
+	path = upstream/playcanvas/playcanvas-tween
+	url = https://github.com/playcanvas/playcanvas-tween.git
+
+[submodule "upstream/playcanvas/playcanvas-webpack"]
+	path = upstream/playcanvas/playcanvas-webpack
+	url = https://github.com/playcanvas/playcanvas-webpack.git
+
+[submodule "upstream/playcanvas/playcanvas.github.io"]
+	path = upstream/playcanvas/playcanvas.github.io
+	url = https://github.com/playcanvas/playcanvas.github.io.git
+
+[submodule "upstream/playcanvas/plugins"]
+	path = upstream/playcanvas/plugins
+	url = https://github.com/playcanvas/plugins.git
+
+[submodule "upstream/playcanvas/prompts"]
+	path = upstream/playcanvas/prompts
+	url = https://github.com/playcanvas/prompts.git
+
+[submodule "upstream/playcanvas/RAIN-GS"]
+	path = upstream/playcanvas/RAIN-GS
+	url = https://github.com/playcanvas/RAIN-GS.git
+
+[submodule "upstream/playcanvas/react"]
+	path = upstream/playcanvas/react
+	url = https://github.com/playcanvas/react.git
+
+[submodule "upstream/playcanvas/rest"]
+	path = upstream/playcanvas/rest
+	url = https://github.com/playcanvas/rest.git
+
+[submodule "upstream/playcanvas/ShareJS"]
+	path = upstream/playcanvas/ShareJS
+	url = https://github.com/playcanvas/ShareJS.git
+
+[submodule "upstream/playcanvas/skills"]
+	path = upstream/playcanvas/skills
+	url = https://github.com/playcanvas/skills.git
+
+[submodule "upstream/playcanvas/sogs"]
+	path = upstream/playcanvas/sogs
+	url = https://github.com/playcanvas/sogs.git
+
+[submodule "upstream/playcanvas/splat-transform"]
+	path = upstream/playcanvas/splat-transform
+	url = https://github.com/playcanvas/splat-transform.git
+
+[submodule "upstream/playcanvas/sprites"]
+	path = upstream/playcanvas/sprites
+	url = https://github.com/playcanvas/sprites.git
+
+[submodule "upstream/playcanvas/stage"]
+	path = upstream/playcanvas/stage
+	url = https://github.com/playcanvas/stage.git
+
+[submodule "upstream/playcanvas/sublime-completions"]
+	path = upstream/playcanvas/sublime-completions
+	url = https://github.com/playcanvas/sublime-completions.git
+
+[submodule "upstream/playcanvas/supersplat"]
+	path = upstream/playcanvas/supersplat
+	url = https://github.com/playcanvas/supersplat.git
+
+[submodule "upstream/playcanvas/supersplat-lichtfeld-plugin"]
+	path = upstream/playcanvas/supersplat-lichtfeld-plugin
+	url = https://github.com/playcanvas/supersplat-lichtfeld-plugin.git
+
+[submodule "upstream/playcanvas/supersplat-viewer"]
+	path = upstream/playcanvas/supersplat-viewer
+	url = https://github.com/playcanvas/supersplat-viewer.git
+
+[submodule "upstream/playcanvas/texture-tool"]
+	path = upstream/playcanvas/texture-tool
+	url = https://github.com/playcanvas/texture-tool.git
+
+[submodule "upstream/playcanvas/texturepacker-exporter"]
+	path = upstream/playcanvas/texturepacker-exporter
+	url = https://github.com/playcanvas/texturepacker-exporter.git
+
+[submodule "upstream/playcanvas/ufbx"]
+	path = upstream/playcanvas/ufbx
+	url = https://github.com/playcanvas/ufbx.git
+
+[submodule "upstream/playcanvas/visual-tests"]
+	path = upstream/playcanvas/visual-tests
+	url = https://github.com/playcanvas/visual-tests.git
+
+[submodule "upstream/playcanvas/vscode-extension"]
+	path = upstream/playcanvas/vscode-extension
+	url = https://github.com/playcanvas/vscode-extension.git
+
+[submodule "upstream/playcanvas/walkthrough.js"]
+	path = upstream/playcanvas/walkthrough.js
+	url = https://github.com/playcanvas/walkthrough.js.git
+
+[submodule "upstream/playcanvas/web-components"]
+	path = upstream/playcanvas/web-components
+	url = https://github.com/playcanvas/web-components.git
+
+[submodule "upstream/playcanvas/webvr"]
+	path = upstream/playcanvas/webvr
+	url = https://github.com/playcanvas/webvr.git
+
+[submodule "upstream/playcanvas/webvr-polyfill"]
+	path = upstream/playcanvas/webvr-polyfill
+	url = https://github.com/playcanvas/webvr-polyfill.git
+
+[submodule "upstream/react/create-react-app"]
+	path = upstream/react/create-react-app
+	url = https://github.com/react/create-react-app.git
+
+[submodule "upstream/react/jsx"]
+	path = upstream/react/jsx
+	url = https://github.com/react/jsx.git
+
+[submodule "upstream/react/metro"]
+	path = upstream/react/metro
+	url = https://github.com/react/metro.git
+
+[submodule "upstream/react/react"]
+	path = upstream/react/react
+	url = https://github.com/react/react.git
+
+[submodule "upstream/react/react-native"]
+	path = upstream/react/react-native
+	url = https://github.com/react/react-native.git
+
+[submodule "upstream/react/react-native-cdp-status"]
+	path = upstream/react/react-native-cdp-status
+	url = https://github.com/react/react-native-cdp-status.git
+
+[submodule "upstream/react/react-native-devtools-frontend"]
+	path = upstream/react/react-native-devtools-frontend
+	url = https://github.com/react/react-native-devtools-frontend.git
+
+[submodule "upstream/react/react-native-website"]
+	path = upstream/react/react-native-website
+	url = https://github.com/react/react-native-website.git
+
+[submodule "upstream/react/react-strict-dom"]
+	path = upstream/react/react-strict-dom
+	url = https://github.com/react/react-strict-dom.git
+
+[submodule "upstream/react/yoga"]
+	path = upstream/react/yoga
+	url = https://github.com/react/yoga.git
