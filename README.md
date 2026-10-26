@@ -14,19 +14,19 @@ Forks and archived repositories are included. Ownership follows GitHub's public 
 
 ## Get the sources
 
-~~~sh
+```sh
 git clone https://github.com/iteatsthesalt/CinderDeep.git
 cd CinderDeep
 git submodule update --init --depth 1 --jobs 8
-~~~
+```
 
 This fetches the recorded source commits into the organized directories. The parent repository tracks Git submodules: source files, original license files, and individual project histories remain in the upstream repositories. A normal clone or GitHub source ZIP without submodule initialization contains the catalog and references, not the upstream source files. Omit `--depth 1` if you need full upstream Git histories.
 
 To fetch selected projects instead:
 
-~~~sh
+```sh
 git submodule update --init --depth 1 -- upstream/playcanvas/engine upstream/react/react upstream/mrdoob/three.js
-~~~
+```
 
 Each upstream project has its own setup and build instructions. Initialize any nested upstream submodules or Git LFS assets as that project's instructions require. This collection does not combine the projects into one build.
 
@@ -43,9 +43,9 @@ No blanket license is applied to the third-party projects. Their original licens
 
 With Python 3 and Git available, run:
 
-~~~sh
+```sh
 python tools/verify_sources.py
-~~~
+```
 
 Verification checks that the committed Git tree, `.gitmodules`, and provenance manifest agree on all 132 paths, upstream URLs, and pinned commit hashes. It does not execute upstream code or require downloading the upstream working trees. Use `--check-worktrees` after initialization to also check each checked-out source commit.
 
