@@ -26,3 +26,15 @@ Requires Node.js 20.19+ or 22.12+. Run npm install once. During development, run
 - GAMEPLAY_SPEC.md — game loop, current rules, roster, visuals and milestones.
 - SYSTEMS_CATALOG.md — detailed systems, all unique mechanics and full world/content inventory.
 - LOCAL_AI_GUIDE.md — setup steps and copy/paste prompts.
+
+## Run guide (milestone 1)
+
+```
+npm install
+npm run dev      # http://localhost:5173
+npm run build
+```
+
+Implemented: title/hero select (Knight, Ranger), sealed 3D Ossuary rooms with timed spike traps, melee/ranged attacks, dash, one ability per hero, three telegraphed enemy behaviors (skeleton lunge, archer shot, bat dive), XP/gold/heal pickups, level-up cards (run passives), 3-room floors with stairs (floors scale endlessly for now), pause, controls/settings/rules panels, permanent-death memorial saved to a versioned local save, GSAP camera/UI/door/level-up animation, synthesized audio.
+
+Next rounds (see GAMEPLAY_SPEC.md): floor map and room types, other regions and bosses, more heroes/weapons, relics, Atlas UI, living-character roster, gamepad/touch, Realm.

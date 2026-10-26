@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>CinderDeep 3D</title>
+<link rel="stylesheet" href="/src/ui/style.css">
+</head>
+<body>
+<canvas id="view"></canvas>
+<div id="ui">
+  <div id="hud" class="hidden">
+    <div class="hud-top-left">
+      <div class="bar hp"><i id="hp-fill"></i><span id="hp-text"></span></div>
+      <div class="bar xp"><i id="xp-fill"></i><span id="xp-text"></span></div>
+      <div class="chips"><span id="gold-chip">0 gold</span><span id="potion-chip">Flask 1</span></div>
+    </div>
+    <div class="hud-top-center"><div id="floor-label"></div><div id="room-label"></div></div>
+    <div class="hud-bottom">
+      <div class="slot" id="slot-dash"><b>Space</b><span>Dash</span><i class="cd"></i></div>
+      <div class="slot" id="slot-q"><b>Q</b><span id="slot-q-name">Ability</span><i class="cd"></i></div>
+      <div class="slot" id="slot-atk"><b>LMB</b><span id="slot-atk-name">Attack</span></div>
+    </div>
+    <div id="prompt" class="hidden"></div>
+    <div id="banner" class="hidden"></div>
+    <div id="floaters"></div>
+    <div id="hurt"></div>
+  </div>
+
+  <section id="title" class="screen">
+    <h1>CINDER<em>DEEP</em></h1>
+    <p class="tag">Three circles. One life. Ten descents.</p>
+    <nav>
+      <button id="btn-new">New Descent</button>
+      <button id="btn-chronicle">Lives &amp; Chronicle</button>
+      <button id="btn-controls">Controls</button>
+      <button id="btn-settings">Settings</button>
+      <button id="btn-rules">Progression Rules</button>
+    </nav>
+  </section>
+
+  <section id="select" class="screen hidden">
+    <h2>Choose your hero</h2>
+    <div id="hero-list"></div>
+    <div class="row"><button id="btn-back-select" class="ghost">Back</button><button id="btn-begin">Descend</button></div>
+  </section>
+
+  <section id="panel" class="screen hidden">
+    <div class="panel-box"><h2 id="panel-title"></h2><div id="panel-body"></div><button id="btn-panel-close">Close</button></div>
+  </section>
+
+  <section id="pause" class="screen hidden">
+    <h2>Paused</h2>
+    <nav>
+      <button id="btn-resume">Resume</button>
+      <button id="btn-pause-controls">Controls</button>
+      <button id="btn-pause-settings">Settings</button>
+      <button id="btn-retire">Retire (end this life)</button>
+    </nav>
+  </section>
+
+  <section id="levelup" class="screen hidden">
+    <h2>Level up</h2><p id="levelup-sub"></p>
+    <div id="cards"></div>
+  </section>
+
+  <section id="death" class="screen hidden">
+    <h2 id="death-title">Memorial</h2>
+    <div id="death-body"></div>
+    <button id="btn-death-title">Return to the surface</button>
+  </section>
+
+  <div id="fade"></div>
+</div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
