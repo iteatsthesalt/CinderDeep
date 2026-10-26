@@ -1,28 +1,27 @@
-# CinderDeep 3D game workspace
+# CinderDeep 3D
 
-This folder is the clean starting point for the browser game. It holds the design contract, instructions for a local coding AI, and a fresh npm manifest for Three.js, GSAP and Vite.
+Fresh Three.js + GSAP + Vite rebuild. See `GAMEPLAY_SPEC.md` for the design contract.
 
-## Start here
+## Run
 
-1. Read AGENTS.md.
-2. Read GAMEPLAY_SPEC.md.
-3. Read SYSTEMS_CATALOG.md.
-4. Follow LOCAL_AI_GUIDE.md.
-5. Open this folder as your AI workspace. Keep game edits inside this folder.
+```sh
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # production build in dist/
+```
 
-The workspace intentionally contains no legacy CinderDeep source code or art. The rest of the repository is an upstream project catalog and is not part of the game. Do not initialize its Git submodules.
+## Controls
+WASD move · mouse aim · click/J attack · Space dash · Q/E ability · F interact · Esc/P pause.
 
-## Runtime stack
+## Status (round 1)
+Playable Ossuary slice: title, hero select (Knight, Ranger, Pyromancer, Rogue), 3D sealed rooms with two enemy waves,
+telegraphed skeleton lunge / archer shot / bat dart, XP + level-up passives, loot, exit portal, 3 floors x 3 chambers,
+pause, permanent-death memorial, versioned local save, Shared Talent Atlas (points earned per level), settings, synthesized audio.
 
-- Three.js renders the complete 3D game world.
-- GSAP animates menus, transitions, camera response and combat feedback.
-- Vite serves and builds the browser app.
+## Layout
+- `src/data/` content tables (heroes, enemies, regions, passives, atlas)
+- `src/game/` simulation (`game.js`), room/renderer (`stage.js`), models, telegraph/particle FX
+- `src/core/` input, audio, save; `src/ui/` HUD and menus
 
-Requires Node.js 20.19+ or 22.12+. Run npm install once. During development, run npm run dev; create a production build with npm run build. No game entry files or game implementation are included; creating all runtime source files from scratch is the first implementation task.
-
-## Important project documents
-
-- AGENTS.md — standing instructions for the coding AI.
-- GAMEPLAY_SPEC.md — game loop, current rules, roster, visuals and milestones.
-- SYSTEMS_CATALOG.md — detailed systems, all unique mechanics and full world/content inventory.
-- LOCAL_AI_GUIDE.md — setup steps and copy/paste prompts.
+## Next
+Floor map + room types, region hazards and the four bosses, remaining heroes/beasts, weapons/relics, gamepad/touch, Realm.

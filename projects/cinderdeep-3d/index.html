@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>CinderDeep 3D</title>
+</head>
+<body>
+<canvas id="view"></canvas>
+<div id="hud" class="hidden">
+  <div class="bars">
+    <div class="bar hp"><i id="hpFill"></i><span id="hpText"></span></div>
+    <div class="bar xp"><i id="xpFill"></i><span id="lvText"></span></div>
+  </div>
+  <div id="floorInfo"></div>
+  <div id="abilities">
+    <div class="slot" id="slotDash"><b>SPACE</b>Dash<u id="cdDash"></u></div>
+    <div class="slot" id="slotQ"><b>Q</b><span id="abName"></span><u id="cdQ"></u></div>
+  </div>
+  <div id="goldInfo"></div>
+  <div id="bossBar" class="hidden"><span id="bossName"></span><div class="bar boss"><i id="bossFill"></i></div></div>
+  <div id="prompt" class="hidden"></div>
+  <div id="banner"></div>
+</div>
+<div id="screen"></div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
