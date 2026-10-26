@@ -70,7 +70,7 @@ export class Game {
   }
 
   loadRoom(i, first) {
-    this.roomIdx = i; this.state2 = 'playing';
+    this.roomIdx = i; this.state2 = 'playing'; this.waves = [];
     const kindInfo = this.plan[i], seed = (Math.random() * 1e9) | 0;
     const go = () => {
       this.unloadRoom();
@@ -322,7 +322,7 @@ export class Game {
       if (this.state === 'playing') {
         if (inp.hit('KeyF')) this.interact();
         const info = this.plan[this.roomIdx];
-        if (!info.cleared && this.waves.length && !this.enemies.some((e) => !e.dead)) {
+        if (this.state === 'playing' && !info.cleared && this.waves.length && !this.enemies.some((e) => !e.dead)) {
           if (this.waveIdx < this.waves.length) this.spawnWave(); else if (info.kind !== 'boss') this.roomClear();
         }
         if (this.pendingLevels.length && this.state === 'playing') this.nextLevelUp();
