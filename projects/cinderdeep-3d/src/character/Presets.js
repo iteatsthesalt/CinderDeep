@@ -1,0 +1,39 @@
+// Character presets — expanded from the sprite rig's 4 presets to the full 13 heroes + 6 beasts
+export const PRESETS = {
+  scout: { name: "Scout", pal: { shirt: "#d9822b", pants: "#3b4a6b", skin: "#f0c79c", hair: "#2a1f1a", gear: "#6b5136" }, head: "none", back: "pack", right: "torch", left: "none" },
+  knight: { name: "Knight", pal: { shirt: "#8d99ae", pants: "#454b59", skin: "#e8b48c", hair: "#5a3a22", gear: "#a8322d" }, head: "helmet", back: "cape", right: "sword", left: "shield" },
+  ranger: { name: "Ranger", pal: { shirt: "#4f7a3a", pants: "#5a4632", skin: "#c99272", hair: "#c4501f", gear: "#2f4d24" }, head: "hood", back: "cape", right: "lantern", left: "none" },
+  mage: { name: "Mage", pal: { shirt: "#5a3e8a", pants: "#2c2440", skin: "#f0c09a", hair: "#e8e0d0", gear: "#3a2a5a" }, head: "hat", back: "cape", right: "staff", left: "none" },
+};
+
+// Full hero roster — 13 heroes from the design spec
+export const HEROES = {
+  knight: { name: "Knight", cls: "knight", pal: { shirt: "#8d99ae", pants: "#454b59", skin: "#e8b48c", hair: "#5a3a22", gear: "#a8322d" }, head: "helmet", back: "cape", right: "sword", left: "shield", weapon: "sword", ability: "shieldBash", hp: 120, atk: 14, spd: 5, passive: "Reduced incoming damage", desc: "Durable sword fighter with a shield bash" },
+  ranger: { name: "Ranger", cls: "ranger", pal: { shirt: "#4f7a3a", pants: "#5a4632", skin: "#c99272", hair: "#c4501f", gear: "#2f4d24" }, head: "hood", back: "cape", right: "sword", left: "none", weapon: "bow", ability: "arrowRain", hp: 90, atk: 12, spd: 6, passive: "Critical/piercing bias", desc: "Mobile archer with arrow rain" },
+  pyromancer: { name: "Pyromancer", cls: "pyromancer", pal: { shirt: "#a8361c", pants: "#2c2440", skin: "#f0c09a", hair: "#e8e0d0", gear: "#5a3e8a" }, head: "hat", back: "cape", right: "staff", left: "none", weapon: "fireStaff", ability: "meteor", hp: 80, atk: 16, spd: 5, passive: "Burns last longer", desc: "Fire staff and meteor" },
+  rogue: { name: "Rogue", cls: "rogue", pal: { shirt: "#2a2a3a", pants: "#1a1a2a", skin: "#d8b48c", hair: "#1a1a1a", gear: "#4a4a5a" }, head: "hood", back: "pack", right: "sword", left: "sword", weapon: "daggers", ability: "shadowStep", hp: 85, atk: 15, spd: 7, passive: "Extra dash, high crit", desc: "Twin daggers, shadow step" },
+  berserker: { name: "Berserker", cls: "berserker", pal: { shirt: "#6b2a1a", pants: "#3a2010", skin: "#d8a878", hair: "#3a1a0a", gear: "#8a3a2a" }, head: "none", back: "pack", right: "sword", left: "none", weapon: "axe", ability: "whirlwind", hp: 140, atk: 16, spd: 5, passive: "Damage rises as health falls", desc: "Highest health, whirlwind" },
+  stormcaller: { name: "Stormcaller", cls: "stormcaller", pal: { shirt: "#2a4a8a", pants: "#1a2a4a", skin: "#e8c09a", hair: "#c8d8e8", gear: "#4a6aaa" }, head: "hat", back: "cape", right: "staff", left: "none", weapon: "stormRod", ability: "chainLightning", hp: 85, atk: 14, spd: 6, passive: "Periodic shock aura", desc: "Chaining lightning" },
+  necromancer: { name: "Necromancer", cls: "necromancer", pal: { shirt: "#2a3a2a", pants: "#1a2a1a", skin: "#c8b8a8", hair: "#2a2a2a", gear: "#4a5a3a" }, head: "hood", back: "cape", right: "staff", left: "none", weapon: "venomTome", ability: "boneLegion", hp: 80, atk: 13, spd: 5, passive: "Slain foes can rise as allies", desc: "Venom tome, bone legion" },
+  paladin: { name: "Paladin", cls: "paladin", pal: { shirt: "#c8c8d8", pants: "#8a8a9a", skin: "#e8b48c", hair: "#c8a84a", gear: "#a8a8b8" }, head: "helmet", back: "cape", right: "sword", left: "shield", weapon: "mace", ability: "consecrate", hp: 110, atk: 14, spd: 5, passive: "Blocks first hit in each fight", desc: "Mace and consecration" },
+  monk: { name: "Monk", cls: "monk", pal: { shirt: "#d8a83a", pants: "#8a6a2a", skin: "#d8a878", hair: "#1a1a1a", gear: "#c88a2a" }, head: "none", back: "none", right: "none", left: "none", weapon: "fists", ability: "flurry", hp: 95, atk: 13, spd: 7, passive: "Dodge and dash sustain", desc: "Rapid gauntlets, flurry" },
+  gunslinger: { name: "Gunslinger", cls: "gunslinger", pal: { shirt: "#4a3a2a", pants: "#2a1a1a", skin: "#d8b898", hair: "#1a1a1a", gear: "#6a5a4a" }, head: "hat", back: "pack", right: "sword", left: "sword", weapon: "pistols", ability: "fanTheHammer", hp: 85, atk: 15, spd: 6, passive: "Dash enables guaranteed crit", desc: "Twin pistols, fan the hammer" },
+  samurai: { name: "Samurai", cls: "samurai", pal: { shirt: "#8a2a2a", pants: "#2a1a1a", skin: "#d8b898", hair: "#1a1a1a", gear: "#6a2a2a" }, head: "hood", back: "cape", right: "sword", left: "none", weapon: "katana", ability: "iaido", hp: 90, atk: 16, spd: 6, passive: "Kill-refreshed dash", desc: "Katana, iaido strike" },
+  bard: { name: "Bard", cls: "bard", pal: { shirt: "#2a8a8a", pants: "#1a4a4a", skin: "#e8c09a", hair: "#c8a84a", gear: "#4a8a8a" }, head: "hat", back: "cape", right: "staff", left: "none", weapon: "warLute", ability: "warSong", hp: 85, atk: 13, spd: 6, passive: "Ability synergy", desc: "Piercing musical attacks" },
+  hexwitch: { name: "Hex Witch", cls: "hexwitch", pal: { shirt: "#3a2a4a", pants: "#1a0a2a", skin: "#d8c8b8", hair: "#1a1a1a", gear: "#5a3a6a" }, head: "hat", back: "cape", right: "staff", left: "none", weapon: "hexStaff", ability: "blackHole", hp: 80, atk: 14, spd: 6, passive: "Hexes and potion synergy", desc: "Curses and black hole" },
+};
+
+// 6 elemental beasts
+export const BEASTS = {
+  emberpup: { name: "Emberpup", cls: "emberpup", pal: { shirt: "#c8361c", pants: "#8a2410", skin: "#e8602a", hair: "#a8301a", gear: "#6b2010" }, head: "hood", back: "cape", right: "none", left: "none", weapon: "natural", ability: "fireball", hp: 100, atk: 14, spd: 6, passive: "Fire immunity, longer burns", desc: "Fire beast, grows into blazing hunter" },
+  mossling: { name: "Mossling", cls: "mossling", pal: { shirt: "#4a8a3a", pants: "#2a5a1a", skin: "#6a9a4a", hair: "#3a6a2a", gear: "#2a4a1a" }, head: "none", back: "pack", right: "none", left: "none", weapon: "natural", ability: "mendingLight", hp: 110, atk: 12, spd: 5, passive: "Regeneration", desc: "Nature beast, grows into treant" },
+  frostkit: { name: "Frostkit", cls: "frostkit", pal: { shirt: "#4a8ac8", pants: "#2a5a8a", skin: "#8ac8e8", hair: "#6aa8c8", gear: "#3a6a8a" }, head: "hood", back: "cape", right: "staff", left: "none", weapon: "frostWand", ability: "frostNova", hp: 90, atk: 13, spd: 6, passive: "Extra damage to chilled foes", desc: "Frost beast, grows into kitsune" },
+  sparkmite: { name: "Sparkmite", cls: "sparkmite", pal: { shirt: "#8a8ac8", pants: "#4a4a8a", skin: "#a8a8e8", hair: "#6a6ac8", gear: "#5a5a8a" }, head: "hat", back: "cape", right: "staff", left: "none", weapon: "stormRod", ability: "chainLightning", hp: 85, atk: 14, spd: 7, passive: "Periodic chain lightning", desc: "Storm beast, grows into thunder juggernaut" },
+  pebblet: { name: "Pebblet", cls: "pebblet", pal: { shirt: "#8a7a6a", pants: "#5a4a3a", skin: "#9a8a7a", hair: "#6a5a4a", gear: "#7a6a5a" }, head: "none", back: "pack", right: "none", left: "none", weapon: "natural", ability: "groundSlam", hp: 130, atk: 14, spd: 4, passive: "Armor and knockback resistance", desc: "Earth beast, grows into crystal golem" },
+  gloomling: { name: "Gloomling", cls: "gloomling", pal: { shirt: "#2a1a3a", pants: "#1a0a2a", skin: "#4a3a5a", hair: "#2a1a3a", gear: "#3a2a4a" }, head: "hood", back: "cape", right: "staff", left: "none", weapon: "hexStaff", ability: "shadowStep", hp: 85, atk: 15, spd: 7, passive: "Floating/dodge/kill-healing", desc: "Shadow beast, grows into void reaper" },
+};
+
+export const ALL_PLAYABLES = { ...HEROES, ...BEASTS };
+
+export const PAL_NAMES = { shirt: "Tunic", pants: "Legs", skin: "Skin", hair: "Hair", gear: "Gear" };
+export const OPTS = { head: ["none", "helmet", "hood", "hat"], back: ["pack", "cape", "none"], right: ["torch", "sword", "staff", "lantern", "none"], left: ["none", "shield", "lantern"] };

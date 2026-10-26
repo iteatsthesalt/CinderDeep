@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>CinderDeep 3D</title>
+  <style>
+    :root {
+      --soot: #120d0f; --soot-2: #1d1619; --soot-3: #2a2024; --soot-4: #3a2d31;
+      --bone: #f1e5cd; --bone-2: #bfae94; --bone-3: #85766a;
+      --ember: #ff7a3c; --ember-2: #ffb35e; --ember-deep: #a8361c;
+      --gold: #ffd35c; --blood: #e2434f; --frost: #8ad8ff; --venom: #8fe05c; --arcane: #b98cff;
+      --f-title: "Jacquard 24", "Old English Text MT", Georgia, serif;
+      --f-ui: "Jersey 15", "Trebuchet MS", system-ui, sans-serif;
+      --notch: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+      color-scheme: dark;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Jacquard+24&family=Jersey+15&display=swap');
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    body { background: var(--soot); color: var(--bone); font: 400 19px/1.25 var(--f-ui); -webkit-font-smoothing: antialiased; overscroll-behavior: none; }
+    * { box-sizing: border-box; }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; background: none; border: none; }
+    :focus-visible { outline: 2px solid var(--ember-2); outline-offset: 2px; }
+    #app { position: fixed; inset: 0; overflow: hidden; background: #08060a; touch-action: none; user-select: none; }
+    #screen { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .hud { position: absolute; inset: 0; pointer-events: none; }
+    .hud-tl { position: absolute; left: 12px; top: 10px; display: grid; gap: 5px; width: min(300px, 46vw); }
+    .bar { position: relative; height: 18px; background: #1a0e10; box-shadow: 0 0 0 2px #050304, inset 0 0 0 1px rgba(255,255,255,0.06); }
+    .bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; }
+    .bar .fill { background: linear-gradient(#ff6a6f, #c92a3a 60%, #9e1d2c); }
+    .bar .shield { background: linear-gradient(#cdeeff, #6fb8e8); height: 5px; top: auto; }
+    .bar span { position: absolute; inset: 0; display: grid; place-items: center; font-size: 17px; letter-spacing: 0.04em; text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000; font-variant-numeric: tabular-nums; }
+    .xpbar { height: 7px; } .xpbar .fill { background: linear-gradient(#b6f3ff, #52b8e8); }
+    .lvl { min-width: 30px; height: 22px; padding: 0 5px; display: grid; place-items: center; background: var(--soot-3); box-shadow: 0 0 0 2px #050304; color: var(--gold); }
+    .xprow { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; }
+    .hud-tr { position: absolute; right: 12px; top: 10px; text-align: right; }
+    #minimap { width: 132px; height: 96px; background: rgba(8,5,8,0.55); box-shadow: 0 0 0 2px rgba(5,3,4,0.8); image-rendering: pixelated; }
+    .floor-lbl { font-size: 18px; color: var(--bone-2); text-shadow: 1px 1px 0 #000; }
+    .floor-lbl b { color: var(--ember-2); }
+    .hud-bl { position: absolute; left: 12px; bottom: 10px; display: flex; gap: 6px; }
+    .slot { width: 46px; height: 46px; background: rgba(8,5,8,0.7); box-shadow: 0 0 0 2px rgba(5,3,4,0.8); display: grid; place-items: center; font-size: 11px; color: var(--bone-2); position: relative; clip-path: var(--notch); }
+    .slot .cd { position: absolute; inset: 0; background: rgba(0,0,0,0.6); transform-origin: bottom; transform: scaleY(0); }
+    .hud-br { position: absolute; right: 12px; bottom: 10px; display: flex; gap: 8px; font-size: 17px; text-shadow: 1px 1px 0 #000, -1px 1px 0 #000; font-variant-numeric: tabular-nums; }
+    .banner { position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); font: 400 32px/1.2 var(--f-title); color: var(--ember-2); text-shadow: 2px 2px 0 #000, -2px 2px 0 #000, 0 0 20px rgba(255,122,60,0.6); text-align: center; pointer-events: none; opacity: 0; }
+    .overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(8,6,10,0.92); z-index: 10; }
+    .overlay .panel { background: var(--soot-2); border: 2px solid var(--soot-4); clip-path: var(--notch); padding: 28px 36px; text-align: center; max-width: 520px; }
+    .overlay h1 { font: 400 42px/1.1 var(--f-title); margin: 0 0 8px; color: var(--ember-2); text-shadow: 0 0 24px rgba(255,122,60,0.4); }
+    .overlay h2 { font: 400 28px/1.2 var(--f-title); margin: 0 0 8px; color: var(--ember); }
+    .overlay p { color: var(--bone-2); margin: 6px 0; }
+    .overlay .btn { display: block; width: 100%; padding: 10px 20px; margin: 6px 0; background: var(--soot-3); border: 1px solid var(--soot-4); color: var(--bone); font-size: 18px; clip-path: var(--notch); transition: background 0.15s; }
+    .overlay .btn:hover { background: var(--soot-4); color: var(--ember-2); }
+    .overlay .btn.primary { background: var(--ember-deep); border-color: var(--ember); color: var(--bone); }
+    .overlay .btn.primary:hover { background: var(--ember); }
+    .cards { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .card { width: 160px; background: var(--soot-3); border: 1px solid var(--soot-4); padding: 12px; clip-path: var(--notch); cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
+    .card:hover { transform: translateY(-4px); border-color: var(--ember); }
+    .card h3 { margin: 0 0 4px; color: var(--ember-2); font-size: 16px; }
+    .card p { font-size: 13px; color: var(--bone-2); }
+    .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin: 12px 0; }
+    .char-btn { padding: 10px; background: var(--soot-3); border: 1px solid var(--soot-4); clip-path: var(--notch); text-align: center; font-size: 14px; transition: background 0.15s; }
+    .char-btn:hover { background: var(--soot-4); }
+    .char-btn.sel { border-color: var(--ember); background: var(--soot-4); color: var(--ember-2); }
+    .hidden { display: none !important; }
+    .interact-prompt { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(8,5,8,0.8); padding: 6px 14px; font-size: 16px; color: var(--ember-2); clip-path: var(--notch); border: 1px solid var(--soot-4); }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="screen"></canvas>
+    <div class="hud hidden" id="hud">
+      <div class="hud-tl">
+        <div class="xprow"><span class="lvl" id="hud-lvl">1</span><div class="bar xpbar"><i class="fill" id="hud-xp"></i></div></div>
+        <div class="bar"><i class="fill" id="hud-hp"></i><span id="hud-hp-txt">100/100</span></div>
+      </div>
+      <div class="hud-tr">
+        <canvas id="minimap" width="132" height="96"></canvas>
+        <div class="floor-lbl" id="hud-floor">Floor 1 · The Ossuary</div>
+      </div>
+      <div class="hud-bl">
+        <div class="slot" id="hud-w1">W1</div>
+        <div class="slot" id="hud-w2">W2</div>
+        <div class="slot" id="hud-q">Q<div class="cd" id="hud-q-cd"></div></div>
+        <div class="slot" id="hud-e">E<div class="cd" id="hud-e-cd"></div></div>
+      </div>
+      <div class="hud-br">
+        <span id="hud-gold" style="color:var(--gold)">⚡0</span>
+        <span id="hud-embers" style="color:var(--ember)">🔥0</span>
+      </div>
+      <div class="banner" id="banner"></div>
+      <div class="interact-prompt hidden" id="interact-prompt">[F] Interact</div>
+    </div>
+    <div class="overlay" id="title-screen">
+      <div class="panel">
+        <h1>CinderDeep</h1>
+        <p>Three circles. One life. Ten descents.</p>
+        <div class="char-grid" id="char-select"></div>
+        <button class="btn primary" id="btn-start">Begin Descent</button>
+        <button class="btn" id="btn-controls">Controls</button>
+      </div>
+    </div>
+    <div class="overlay hidden" id="pause-screen">
+      <div class="panel">
+        <h2>Paused</h2>
+        <button class="btn primary" id="btn-resume">Resume</button>
+        <button class="btn" id="btn-quit">Save & Quit</button>
+      </div>
+    </div>
+    <div class="overlay hidden" id="death-screen">
+      <div class="panel">
+        <h2 style="color:var(--blood)">You Died</h2>
+        <p id="death-info"></p>
+        <button class="btn primary" id="btn-new-life">New Life</button>
+      </div>
+    </div>
+    <div class="overlay hidden" id="levelup-screen">
+      <div class="panel">
+        <h2>Level Up!</h2>
+        <p>Choose your boon:</p>
+        <div class="cards" id="levelup-cards"></div>
+      </div>
+    </div>
+    <div class="overlay hidden" id="controls-screen">
+      <div class="panel">
+        <h2>Controls</h2>
+        <p>WASD/Arrows — Move · Mouse — Aim · Click/J — Attack</p>
+        <p>Space — Dash · Q/E — Abilities · F — Interact</p>
+        <p>Tab — Swap Weapon · R — Potion · M — Map · Esc — Pause</p>
+        <button class="btn primary" id="btn-controls-back">Back</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
