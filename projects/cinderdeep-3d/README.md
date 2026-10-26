@@ -18,7 +18,7 @@ The workspace intentionally contains no legacy CinderDeep source code or art. Th
 - GSAP animates menus, transitions, camera response and combat feedback.
 - Vite serves and builds the browser app.
 
-Requires Node.js 20.19+ or 22.12+. Run npm install once. During development, run npm run dev; create a production build with npm run build. No game entry files or game implementation are included; creating all runtime source files from scratch is the first implementation task.
+Requires Node.js 20.19+ or 22.12+. Run npm install once. During development, run npm run dev; create a production build with npm run build. 
 
 ## Important project documents
 
@@ -26,3 +26,28 @@ Requires Node.js 20.19+ or 22.12+. Run npm install once. During development, run
 - GAMEPLAY_SPEC.md — game loop, current rules, roster, visuals and milestones.
 - SYSTEMS_CATALOG.md — detailed systems, all unique mechanics and full world/content inventory.
 - LOCAL_AI_GUIDE.md — setup steps and copy/paste prompts.
+
+## Run guide (milestone 1: Ossuary slice)
+
+```
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # production build into dist/
+```
+
+Controls: WASD move, mouse aim, left click/J attack, Space dash, Q ability, R potion, F interact, Esc/P pause.
+
+### Implemented
+- Title screen (GSAP entrance, orbiting 3D camera) with four heroes: Knight, Ranger, Pyromancer, Rogue.
+- Procedural low-poly Ossuary rooms: sealed on entry, portcullis doors, pillars, flickering torches, shadows.
+- Combat: melee arcs with combo finisher, projectiles with pierce/burn/crit, dash with i-frames, one ability per hero.
+- Enemies with telegraphed behaviours: lunging skeleton, kiting archer, swooping bat, leaping/splitting slime; elites.
+- XP/gold/health pickups, level-up cards (12 run upgrades), 3-room floors with stairs and endless floor scaling.
+- HUD, pause (map, build, controls, settings, retire), death memorial, versioned local save with Chronicle of past lives.
+- Permanent death: dying or retiring ends the life and records a memorial; there is no respawn.
+
+### Next milestones
+Floor map with branching rooms and room types; regions 2-4 and the four bosses; remaining heroes/beasts, weapons and relics;
+Shared Talent Atlas and ten-descent living characters; gamepad/touch input and remapping; the Realm.
+
+Debug hook: `window.__cinderdeep` exposes the running game.
