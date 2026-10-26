@@ -26,3 +26,17 @@ Requires Node.js 20.19+ or 22.12+. Run npm install once. During development, run
 - GAMEPLAY_SPEC.md — game loop, current rules, roster, visuals and milestones.
 - SYSTEMS_CATALOG.md — detailed systems, all unique mechanics and full world/content inventory.
 - LOCAL_AI_GUIDE.md — setup steps and copy/paste prompts.
+
+## Run guide (milestone 1)
+
+```
+npm install
+npm run dev      # http://localhost:5173
+npm run build
+```
+
+Keyboard/mouse: WASD move, mouse aim, left click/J attack, Space dash, Q ability, R flask, F interact, M map, Esc pause. 1/2/3 picks a level-up card.
+
+Implemented so far: title/hero select (Knight, Ranger, Pyromancer, Rogue), procedural low-poly 3D rooms, three enemy behaviours with telegraphs (lunging skeleton, aimed-shot archer, diving bat), per-region boss with slam/summon phases, 12-floor/4-region descent loop with room sequence (combat, rest fountain, treasure chest, stairs, boss), XP/gold/heart pickups, level-up passives, shared Talent Atlas (small graph), versioned local save, permanent death with memorials, pause/map/build/settings, synthesized audio.
+
+Not yet: remaining 9 heroes + 6 beasts, full weapon/relic/evolution systems, floor branching map, shops/shrines/forge/secrets, region hazards, DNA/skill circles, controller/touch/remap, Realm.
