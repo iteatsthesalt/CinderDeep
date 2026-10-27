@@ -192,7 +192,8 @@ function cfxSize(){
   CFX.renderW=w;CFX.renderH=h;CFX.dirty=false;
 }
 function cfxExposure(){
-  if(G.t-CFX.lastExposure<1&&G.t>=CFX.lastExposure)return; // reading pixels back stalls the GPU, so sample once a secondCFX.lastExposure=G.t;
+  if(G.t-CFX.lastExposure<1&&G.t>=CFX.lastExposure)return; // reading pixels back stalls the GPU, so sample once a second
+  CFX.lastExposure=G.t;
   if(!CFX.exposureCanvas)CFX.exposureCanvas=mkCanvas(12,8);
   try{const g=CFX.exposureCanvas.getContext('2d',{willReadFrequently:true});g.drawImage(R.low,0,0,12,8);const d=g.getImageData(0,0,12,8).data;let lum=0;for(let i=0;i<d.length;i+=4)lum+=(d[i]*.2126+d[i+1]*.7152+d[i+2]*.0722)/255;lum/=96;const target=clamp(1.02+(.28-lum)*.28,.94,1.1);CFX.exposure=lerp(CFX.exposure,target,.18);}catch(e){CFX.exposure=1;}
 }

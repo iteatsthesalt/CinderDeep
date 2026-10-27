@@ -13,6 +13,7 @@ const scenarios = require('./scenarios');
 (async () => {
   const want = process.argv.slice(2);
   const list = scenarios.filter((s) => !want.length || want.some((w) => s.name.includes(w)));
+  if (want.length && !list.length) { console.error('no scenario matches: ' + want.join(' ')); process.exit(1); }
   let failed = 0;
   for (const s of list) {
     // a browser of its own for each: the soak leaves the software GL process with a backlog of frames that would starve the next page
