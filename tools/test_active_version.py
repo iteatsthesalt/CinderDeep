@@ -23,7 +23,8 @@ class ActiveVersionTests(unittest.TestCase):
         self.old = self.git('rev-parse', 'HEAD')
         game = self.root / 'projects/cinderdeep-3d'
         (game / 'src').mkdir(parents=True)
-        (game / 'src/main.js').write_text('// existing game')
+        (game / 'tools').mkdir()
+        (game / 'tools/build.js').write_text('// existing game')
         (game / 'package-lock.json').write_text('{}')
         self.git('add', '.')
         self.git('commit', '-qm', 'game baseline')
@@ -61,7 +62,7 @@ class ActiveVersionTests(unittest.TestCase):
             check(self.root)
 
     def test_missing_game_is_rejected(self):
-        (self.root / 'projects/cinderdeep-3d/src/main.js').unlink()
+        (self.root / 'projects/cinderdeep-3d/tools/build.js').unlink()
         with self.assertRaisesRegex(ValueError, 'source or frozen'):
             check(self.root)
 

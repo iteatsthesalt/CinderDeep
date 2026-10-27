@@ -1,22 +1,14 @@
 {
   "name": "cinderdeep-3d",
-  "version": "0.1.0",
   "private": true,
-  "type": "module",
+  "description": "Cinderdeep in 3D, a single-file browser roguelite, built from src/",
   "scripts": {
-    "test": "node --test test/*.test.js",
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "predev": "python3 ../../tools/check_active_version.py",
     "prebuild": "python3 ../../tools/check_active_version.py",
-    "prepreview": "python3 ../../tools/check_active_version.py"
-  },
-  "dependencies": {
-    "gsap": "^3.15.0",
-    "three": "^0.186.1"
+    "build": "node tools/build.js",
+    "check": "node tools/build.js --check",
+    "test": "node tools/build.js --check && node tests/run.js"
   },
   "devDependencies": {
-    "vite": "^8.3.5"
+    "playwright": "1.63.0"
   }
 }
