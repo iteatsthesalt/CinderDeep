@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -63,6 +64,20 @@ class ActiveVersionTests(unittest.TestCase):
         (self.root / 'projects/cinderdeep-3d/src/main.js').unlink()
         with self.assertRaisesRegex(ValueError, 'source or frozen'):
             check(self.root)
+
+    def test_persistent_hooks_block_retired_push_and_old_checkout(self):
+        subprocess.run([sys.executable, str(Path(__file__).with_name('install_version_hooks.py')),
+                        '--root', str(self.root)], check=True, capture_output=True)
+        hooks = self.root / '.git/cinderdeep-version-guard/hooks'
+        def push(target):
+            return subprocess.run([str(hooks / 'pre-push')], cwd=self.root,
+                                  input=f'refs/heads/main {self.manifest["baseline_commit"]} refs/heads/{target} {"0" * 40}\n',
+                                  capture_output=True, text=True)
+        self.assertEqual(push('feature/current-work').returncode, 0)
+        self.assertNotEqual(push('old-prototype').returncode, 0)
+        (self.root / 'ACTIVE_VERSION.json').unlink()
+        result = subprocess.run([str(hooks / 'pre-commit')], cwd=self.root, capture_output=True)
+        self.assertNotEqual(result.returncode, 0)
 
 
 if __name__ == '__main__':

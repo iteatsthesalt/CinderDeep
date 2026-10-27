@@ -43,6 +43,6 @@ The other session identifier supplied by the user is `ccr-c44de517-hmls4q`. Its 
 
 ## Preventing another split
 
-Read root and game AGENTS.md. Run `python3 tools/check_active_version.py` before work. The game npm dev/build/preview lifecycle invokes this guard. Use feature branches based on current main; do not recreate the retired branch names. Historical fresh-build prompts are superseded by the current continuation guide.
+Read root and game AGENTS.md. Run `python3 tools/check_active_version.py` before work. The game npm dev/build/preview lifecycle invokes this guard. Run `PYTHONDONTWRITEBYTECODE=1 python3 tools/install_version_hooks.py` to install checkout-persistent pre-commit and pre-push guards. These reject an archived checkout and recreation of retired branch names; existing user hooks are preserved rather than overwritten. Use feature branches based on current main; do not recreate the retired branch names. Historical fresh-build prompts are superseded by the current continuation guide.
 
-Remote archival/retirement and environment publication must be reported according to the actual tool results. Local files alone do not update an already running chat.
+Remote archival was verified: 12 archive tags were published, 10 competing branches were retired, and main was the only remaining branch. Local hooks are not server-side repository rules: another clone can bypass them or recreate a branch. GitHub API access was denied, so server-side branch rules were not installed. The other running chat must migrate to main; its unpushed work remains outside this inventory. Environment publication remains a separate user action.

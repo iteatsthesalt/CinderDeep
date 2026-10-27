@@ -14,7 +14,8 @@ prototype branch names. Cloud tasks are already isolated; no new Git worktree is
 ## Install and run
 
 Use the provided Node 24, npm, Python 3 and Git. From the repository root run
-`python3 tools/check_active_version.py`, then from this folder run `npm ci`,
+`python3 tools/check_active_version.py` and
+`PYTHONDONTWRITEBYTECODE=1 python3 tools/install_version_hooks.py`, then from this folder run `npm ci`,
 `npm run build` and `npm run dev`. Do not initialize upstream submodules.
 
 ## Prompt for another agent

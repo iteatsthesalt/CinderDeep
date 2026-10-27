@@ -3,6 +3,7 @@
 The only active development line is `main`; the game is in `projects/cinderdeep-3d/`.
 Read `ACTIVE_VERSION.json` and `VERSION_HISTORY.md` before making changes.
 Run `python3 tools/check_active_version.py` before installation, development, or commits.
+Install persistent hooks with `PYTHONDONTWRITEBYTECODE=1 python3 tools/install_version_hooks.py`.
 Cloud tasks already have isolated checkouts; do not create a Git worktree unless requested.
 
 Continue the existing game. Preserve source, models, saves, and uncommitted work.
