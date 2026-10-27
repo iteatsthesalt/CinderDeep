@@ -1,0 +1,659 @@
+diff --git a/projects/cinderdeep-3d/.gitignore b/projects/cinderdeep-3d/.gitignore
+index 86f5a06..3dd798b 100644
+--- a/projects/cinderdeep-3d/.gitignore
++++ b/projects/cinderdeep-3d/.gitignore
+@@ -6,3 +6,4 @@ dist/
+ Thumbs.db
+ smoke*.tmp.cjs
+ *.tmp.cjs
++jobs/*/out/
+diff --git a/projects/cinderdeep-3d/README.md b/projects/cinderdeep-3d/README.md
+index 4488889..394fc53 100644
+--- a/projects/cinderdeep-3d/README.md
++++ b/projects/cinderdeep-3d/README.md
+@@ -10,9 +10,9 @@ Three repeating jobs build the game. Each has its own README, owner and files:
+ 
+ | Job | Owner | README |
+ | --- | --- | --- |
+-| Playable characters | Claude | [jobs/playable-characters/README.md](jobs/playable-characters/README.md) |
+-| The world | ChatGPT (Codex) | [jobs/world/README.md](jobs/world/README.md) |
+-| Enemies and assets | Other Claude | [jobs/enemies-and-assets/README.md](jobs/enemies-and-assets/README.md) |
++| Playable characters | Claude | [jobs/claude-playable-characters/README.md](jobs/claude-playable-characters/README.md) |
++| The world | ChatGPT (Codex) | [jobs/chatgpt-world/README.md](jobs/chatgpt-world/README.md) |
++| Enemies and assets | Other Claude | [jobs/other-claude-enemies-and-assets/README.md](jobs/other-claude-enemies-and-assets/README.md) |
+ 
+ The [jobs board](jobs/README.md) has the file ownership and the steps every run follows.
+ 
+diff --git a/projects/cinderdeep-3d/jobs/README.md b/projects/cinderdeep-3d/jobs/README.md
+index f319aa3..b4ba85f 100644
+--- a/projects/cinderdeep-3d/jobs/README.md
++++ b/projects/cinderdeep-3d/jobs/README.md
+@@ -5,9 +5,9 @@ one README and its own files, so the jobs do not overwrite each other.
+ 
+ | Job | Owner | README | How it repeats |
+ | --- | --- | --- | --- |
+-| **Playable characters** | **Claude** (Claude Code session "Session continuation", `ccr-c44de517-hmls4q`) | [playable-characters/README.md](playable-characters/README.md) | Claude Code routine "CinderDeep job: playable characters", every 3 hours |
+-| **The world** | **ChatGPT** (Codex) | [world/README.md](world/README.md) | The user starts Codex with the prompt in that README |
+-| **Enemies and assets** | **Other Claude** (Claude Code session "Smaller jobs and playtesting") | [enemies-and-assets/README.md](enemies-and-assets/README.md) | Claude Code routine "CinderDeep job: enemies and assets", every 3 hours |
++| **Playable characters** | **Claude** (Claude Code session "Session continuation", `ccr-c44de517-hmls4q`) | [claude-playable-characters/README.md](claude-playable-characters/README.md) | Claude Code routine "CinderDeep job: playable characters", every 3 hours |
++| **The world** | **ChatGPT** (Codex) | [chatgpt-world/README.md](chatgpt-world/README.md) | The user starts Codex with the prompt in that README |
++| **Enemies and assets** | **Other Claude** (Claude Code session "Smaller jobs and playtesting") | [other-claude-enemies-and-assets/README.md](other-claude-enemies-and-assets/README.md) | Claude Code routine "CinderDeep job: enemies and assets", every 3 hours |
+ 
+ The world job was already assigned to Codex on `main` before this board existed; the board
+ keeps that assignment.
+diff --git a/projects/cinderdeep-3d/jobs/world/README.md b/projects/cinderdeep-3d/jobs/chatgpt-world/README.md
+similarity index 96%
+rename from projects/cinderdeep-3d/jobs/world/README.md
+rename to projects/cinderdeep-3d/jobs/chatgpt-world/README.md
+index 940ab05..ce31b14 100644
+--- a/projects/cinderdeep-3d/jobs/world/README.md
++++ b/projects/cinderdeep-3d/jobs/chatgpt-world/README.md
+@@ -83,7 +83,7 @@ ChatGPT cannot be scheduled from Claude Code. To run a step, start Codex on
+ `iteatsthesalt/CinderDeep` with this prompt, or save it as a recurring ChatGPT task:
+ 
+ > You own the world job for CinderDeep. Read `projects/cinderdeep-3d/jobs/README.md` and
+-> `projects/cinderdeep-3d/jobs/world/README.md` on current `main` and follow "Every run" on
++> `projects/cinderdeep-3d/jobs/chatgpt-world/README.md` on current `main` and follow "Every run" on
+ > the board. Branch from `origin/main` as `job/world/<topic>` and do the top unfinished item
+ > of the upgrade order, or a well-scoped part of it. Stay in the world job's files and answer
+ > notes in your Mailbox. Run `npm run check`, `npm run build` and the smoke test. Log the step
+@@ -103,4 +103,4 @@ Notes from other jobs. Each note is dated and signed; answer it, then delete it.
+ ## Work log
+ 
+ - Assignment established: inspected active world modules, documented ownership, current baseline, upgrade sequence and validation expectations. No runtime/world source changed in this documentation update.
+-- 2026-10-27 — Moved to `jobs/world/README.md` under the jobs board. File table, current state and validation updated for the modular systems now on `main`. No world behavior changed. (Claude, characters job)
++- 2026-10-27 — Moved to `jobs/chatgpt-world/README.md` under the jobs board. File table, current state and validation updated for the modular systems now on `main`. No world behavior changed. (Claude, characters job)
+diff --git a/projects/cinderdeep-3d/jobs/chatgpt-world/tools/floors.mjs b/projects/cinderdeep-3d/jobs/chatgpt-world/tools/floors.mjs
+new file mode 100644
+index 0000000..3f13327
+--- /dev/null
++++ b/projects/cinderdeep-3d/jobs/chatgpt-world/tools/floors.mjs
+@@ -0,0 +1,80 @@
++// Floor maps without a browser.
++//   node floors.mjs                     survey: floors 1-12 over 300 seeds, with any broken maps listed
++//   node floors.mjs --seeds 1000        a bigger survey
++//   node floors.mjs --map 7 --seed 42   draw floor 7 for seed 42
++import { generateFloor, ROOM_INFO, GRID, isBossFloor } from '../../../src/game/floor.js';
++import { regionForFloor } from '../../../src/data/regions.js';
++
++const args = process.argv.slice(2);
++const opt = (name, d) => { const i = args.indexOf(name); return i >= 0 ? Number(args[i + 1]) : d; };
++const LETTER = { start: 'S', combat: 'c', elite: 'E', exit: 'X', boss: 'B', treasure: 'T', shop: '$', rest: 'R', shrine: '+' };
++
++function draw(map) {
++  const at = new Map(map.rooms.map((r) => [`${r.gx},${r.gy}`, r]));
++  const lines = [];
++  for (let y = 0; y < GRID; y++) {
++    let row = '';
++    let below = '';
++    for (let x = 0; x < GRID; x++) {
++      const r = at.get(`${x},${y}`);
++      row += r ? `[${LETTER[r.type] || '?'}${r.locked ? '*' : ' '}]` : '    ';
++      row += r && r.doors.e !== undefined ? '-' : ' ';
++      below += r && r.doors.s !== undefined ? ' |   ' : '     ';
++    }
++    lines.push(row.trimEnd(), below.trimEnd());
++  }
++  while (lines.length && !lines[0]) lines.shift();
++  while (lines.length && !lines[lines.length - 1]) lines.pop();
++  return lines.join('\n');
++}
++
++// what must hold for every floor: everything reachable, one way down, fair keys
++function problems(map, floor) {
++  const out = [];
++  const seen = new Set([map.startId]);
++  const queue = [map.startId];
++  while (queue.length) for (const id of Object.values(map.rooms[queue.shift()].doors)) if (!seen.has(id)) { seen.add(id); queue.push(id); }
++  if (seen.size !== map.rooms.length) out.push(`${map.rooms.length - seen.size} room(s) unreachable`);
++  const down = map.rooms.filter((r) => r.type === (isBossFloor(floor) ? 'boss' : 'exit')).length;
++  if (down !== 1) out.push(`${down} ${isBossFloor(floor) ? 'boss' : 'exit'} rooms`);
++  if (map.rooms.some((r) => r.locked) && !map.rooms.some((r) => r.dropsKey)) out.push('locked treasure with no key');
++  for (const r of map.rooms) for (const [side, id] of Object.entries(r.doors)) {
++    const back = { n: 's', s: 'n', e: 'w', w: 'e' }[side];
++    if (map.rooms[id].doors[back] !== r.id) out.push(`door ${r.id}->${id} has no way back`);
++  }
++  return out;
++}
++
++const mapFloor = opt('--map', 0);
++if (mapFloor) {
++  const seed = opt('--seed', 1);
++  const map = generateFloor(mapFloor, seed);
++  console.log(`Floor ${mapFloor} (${regionForFloor(mapFloor).name}), seed ${seed}: ${map.rooms.length} rooms\n`);
++  console.log(draw(map));
++  console.log(`\n${Object.entries(LETTER).map(([t, l]) => `${l} ${ROOM_INFO[t]?.label || t}`).join('  ')}  * locked`);
++  const bad = problems(map, mapFloor);
++  console.log(bad.length ? `\nPROBLEMS: ${bad.join('; ')}` : '\nno problems');
++  process.exit(bad.length ? 1 : 0);
++}
++
++const seeds = opt('--seeds', 300);
++let broken = 0;
++const rows = [];
++for (let floor = 1; floor <= 12; floor++) {
++  const sizes = [];
++  const types = {};
++  for (let seed = 1; seed <= seeds; seed++) {
++    let map;
++    try { map = generateFloor(floor, seed); } catch (e) { console.log(`floor ${floor} seed ${seed}: ${e.message}`); broken++; continue; }
++    sizes.push(map.rooms.length);
++    for (const r of map.rooms) types[r.type] = (types[r.type] || 0) + 1;
++    const bad = problems(map, floor);
++    if (bad.length) { broken++; if (broken <= 20) console.log(`floor ${floor} seed ${seed}: ${bad.join('; ')}`); }
++  }
++  const avg = (n) => (n / sizes.length).toFixed(1);
++  rows.push(`${String(floor).padStart(2)}  ${regionForFloor(floor).name.padEnd(16)} rooms ${Math.min(...sizes)}-${Math.max(...sizes)} (avg ${avg(sizes.reduce((a, b) => a + b, 0))})  ` +
++    Object.keys(LETTER).filter((t) => types[t]).map((t) => `${LETTER[t]} ${avg(types[t])}`).join('  '));
++}
++console.log(`Floors 1-12 over ${seeds} seeds (room-type counts are per floor, on average):\n${rows.join('\n')}`);
++console.log(broken ? `\n${broken} broken floor(s)` : '\nevery floor is connected, has one way down and fair keys');
++process.exit(broken ? 1 : 0);
+diff --git a/projects/cinderdeep-3d/jobs/chatgpt-world/tools/regions.mjs b/projects/cinderdeep-3d/jobs/chatgpt-world/tools/regions.mjs
+new file mode 100644
+index 0000000..2262149
+--- /dev/null
++++ b/projects/cinderdeep-3d/jobs/chatgpt-world/tools/regions.mjs
+@@ -0,0 +1,40 @@
++// Walk each region's rooms in a real browser and screenshot every room type, then lay them out on one sheet.
++//   node regions.mjs                 all four regions
++//   node regions.mjs frostvault      one region (ossuary, grotto, frostvault, cindercore)
++// Output: jobs/chatgpt-world/out/regions/<region>-<room>.png and sheet.png (not committed).
++import { fileURLToPath } from 'node:url';
++import { REGIONS } from '../../../src/data/regions.js';
++import { openGame, cleanView, startLife, toFloor, goTo, settle, shoot, contactSheet } from '../../lib/browser.mjs';
++
++const out = fileURLToPath(new URL('../out/regions/', import.meta.url));
++const pick = process.argv.slice(2);
++const regions = REGIONS.map((r, i) => ({ ...r, first: i * 3 + 1, bossFloor: i * 3 + 3 })).filter((r) => !pick.length || pick.includes(r.id));
++const ROOMS = ['combat', 'elite', 'treasure', 'shop', 'rest', 'shrine', 'exit'];
++
++const game = await openGame();
++const files = [];
++const snap = async (name) => {
++  await game.page.waitForTimeout(1200);
++  await settle(game);
++  files.push(await shoot(game, `${out}${name}.png`));
++};
++try {
++  await startLife(game);
++  await cleanView(game);
++  for (const r of regions) {
++    // the region's second floor has every room type (the first floor of the descent has no elite or shrine)
++    await toFloor(game, r.first + 1);
++    await snap(`${r.id}-start`);
++    for (const type of ROOMS) {
++      if (!(await goTo(game, type))) { console.log(`${r.id}: no ${type} room on floor ${r.first + 1}`); continue; }
++      await snap(`${r.id}-${type}`);
++    }
++    await toFloor(game, r.bossFloor);
++    if (await goTo(game, 'boss')) await snap(`${r.id}-boss`);
++  }
++  console.log(`${files.length} screenshots in ${out}`);
++  console.log(`sheet: ${await contactSheet(game, files, `${out}sheet.png`, { cols: 4, width: 320 })}`);
++  if (game.problems.length) console.log(`browser errors:\n  ${game.problems.join('\n  ')}`);
++} finally {
++  await game.close();
++}
+diff --git a/projects/cinderdeep-3d/jobs/playable-characters/README.md b/projects/cinderdeep-3d/jobs/claude-playable-characters/README.md
+similarity index 100%
+rename from projects/cinderdeep-3d/jobs/playable-characters/README.md
+rename to projects/cinderdeep-3d/jobs/claude-playable-characters/README.md
+diff --git a/projects/cinderdeep-3d/jobs/claude-playable-characters/tools/gallery.mjs b/projects/cinderdeep-3d/jobs/claude-playable-characters/tools/gallery.mjs
+new file mode 100644
+index 0000000..b465651
+--- /dev/null
++++ b/projects/cinderdeep-3d/jobs/claude-playable-characters/tools/gallery.mjs
+@@ -0,0 +1,33 @@
++// Screenshot every playable body on the title pedestal, each beast in every form, and lay them out on one sheet.
++//   node gallery.mjs                 all 19 (beasts in 4 forms each)
++//   node gallery.mjs knight monk     only these
++// Output: jobs/claude-playable-characters/out/gallery/*.png and sheet.png (not committed).
++import { fileURLToPath } from 'node:url';
++import { HEROES, HERO_ORDER } from '../../../src/data/heroes.js';
++import { openGame, cleanView, shoot, contactSheet } from '../../lib/browser.mjs';
++
++const out = fileURLToPath(new URL('../out/gallery/', import.meta.url));
++const pick = process.argv.slice(2).filter((a) => HEROES[a]);
++const ids = pick.length ? pick : HERO_ORDER;
++
++const game = await openGame({ width: 600, height: 600 });
++await cleanView(game);
++// hold the title camera still, close to the pedestal and a little to the hero's right
++await game.ev(() => { window.__cd.renderer.view.orbit = { t: 1.6, speed: 0, dist: 6.2, height: 3.4, lookY: 1.5 }; });
++const files = [];
++try {
++  for (const id of ids) {
++    const forms = HEROES[id].kind === 'beast' ? [[], ['grown'], ['grown', 'apex'], ['grown', 'warden']] : [[]];
++    for (const f of forms) {
++      // bigger forms need the camera further back
++      await game.ev(([hero, fs]) => { window.__cd.renderer.view.orbit.dist = 6.2 + fs.length * 0.7; window.__cd.stage.show(hero, fs); }, [id, f]);
++      await game.page.waitForTimeout(900);
++      files.push(await shoot(game, `${out}${id}${f.length ? `-${f[f.length - 1]}` : ''}.png`));
++    }
++  }
++  console.log(`${files.length} screenshots in ${out}`);
++  console.log(`sheet: ${await contactSheet(game, files, `${out}sheet.png`, { cols: 5, width: 240 })}`);
++  if (game.problems.length) console.log(`browser errors:\n  ${game.problems.join('\n  ')}`);
++} finally {
++  await game.close();
++}
+diff --git a/projects/cinderdeep-3d/jobs/claude-playable-characters/tools/roster.mjs b/projects/cinderdeep-3d/jobs/claude-playable-characters/tools/roster.mjs
+new file mode 100644
+index 0000000..a6035cf
+--- /dev/null
++++ b/projects/cinderdeep-3d/jobs/claude-playable-characters/tools/roster.mjs
+@@ -0,0 +1,54 @@
++// Every playable at a glance: stats, weapon, ability and passive, plus which ability kinds are still shared.
++//   node roster.mjs              the whole roster
++//   node roster.mjs --hero monk  one playable's stat sheet at levels 1, 5 and 12 (and each beast form)
++import { HEROES, HERO_ORDER, FINAL_FORMS } from '../../../src/data/heroes.js';
++import { WEAPONS } from '../../../src/data/weapons.js';
++import { ABILITIES } from '../../../src/data/abilities.js';
++import { computeStats } from '../../../src/game/stats.js';
++
++const args = process.argv.slice(2);
++const pct = (v) => `${Math.round(v * 100)}%`;
++const table = (rows) => {
++  const w = rows[0].map((_, i) => Math.max(...rows.map((r) => String(r[i]).length)));
++  for (const r of rows) console.log(r.map((c, i) => String(c).padEnd(w[i])).join('  '));
++};
++
++const heroArg = args.indexOf('--hero');
++if (heroArg >= 0) {
++  const h = HEROES[args[heroArg + 1]];
++  if (!h) { console.log(`No playable "${args[heroArg + 1]}". Ids: ${HERO_ORDER.join(', ')}`); process.exit(1); }
++  const w = WEAPONS[h.weapon];
++  const a = ABILITIES[h.ability];
++  console.log(`${h.name} (${h.kind}${h.element ? `, ${h.element}` : ''}): ${h.blurb}`);
++  console.log(`Passive: ${h.passiveText}`);
++  console.log(`Weapon: ${w.name}, ${w.kind} ${w.anim}, ${w.damage} damage every ${w.cooldown}s`);
++  console.log(`Ability: ${a.name} (${a.kind}), ${a.cooldown}s cooldown, power ${a.power}\n`);
++  const builds = [[1, []], [5, h.kind === 'beast' ? ['grown'] : []], [12, h.kind === 'beast' ? ['grown'] : []]];
++  if (h.kind === 'beast') for (const f of FINAL_FORMS) builds.push([12, ['grown', f]]);
++  const rows = [['level', 'forms', 'health', 'speed', 'armor', 'crit', 'crit x', 'damage x', 'dashes', 'flasks']];
++  for (const [level, forms] of builds) {
++    const s = computeStats(h, { level, ranks: {}, relics: [], forms }, ['core']);
++    rows.push([level, forms.join('+') || '-', s.maxHp, s.speed.toFixed(2), pct(s.armor), pct(s.crit), s.critMul.toFixed(2), s.damageMul.toFixed(2), s.dashes, s.potionMax]);
++  }
++  table(rows);
++  console.log('\n(Atlas: Ember Heart only; no level-up passives or relics.)');
++  process.exit(0);
++}
++
++const rows = [['id', 'kind', 'health', 'speed', 'armor', 'crit', 'weapon', 'style', 'ability', 'kind', 'passive']];
++for (const id of HERO_ORDER) {
++  const h = HEROES[id];
++  const w = WEAPONS[h.weapon];
++  const a = ABILITIES[h.ability];
++  rows.push([id, h.kind === 'beast' ? h.element : 'hero', h.base.maxHp, h.base.speed, pct(h.base.armor), pct(h.base.crit), w.name, w.anim, a.name, a.kind, h.passiveText]);
++}
++table(rows);
++
++const byAbility = {};
++for (const id of HERO_ORDER) (byAbility[HEROES[id].ability] ||= []).push(id);
++const shared = Object.entries(byAbility).filter(([, ids]) => ids.length > 1);
++console.log(`\n${HERO_ORDER.length} playables, ${Object.keys(WEAPONS).length} weapons, ${Object.keys(ABILITIES).length} abilities.`);
++if (shared.length) {
++  console.log('Abilities still shared by more than one playable (see "Next up" for the signature ones):');
++  for (const [ab, ids] of shared) console.log(`  ${ABILITIES[ab].name}: ${ids.join(', ')}`);
++}
+diff --git a/projects/cinderdeep-3d/jobs/lib/browser.mjs b/projects/cinderdeep-3d/jobs/lib/browser.mjs
+new file mode 100644
+index 0000000..31489ec
+--- /dev/null
++++ b/projects/cinderdeep-3d/jobs/lib/browser.mjs
+@@ -0,0 +1,138 @@
++// Browser plumbing shared by the jobs' tools: open the game with ?debug, start a life, walk the floor map,
++// take screenshots and lay them out on one contact sheet. Needs Playwright and a running dev server
++// (npx vite --port 5199 --strictPort). In a Claude Code cloud session run tools with NODE_PATH=$(npm root -g).
++import { createRequire } from 'node:module';
++import { mkdirSync, readFileSync } from 'node:fs';
++import { dirname, basename } from 'node:path';
++
++const require = createRequire(import.meta.url);
++export const GAME_URL = process.env.URL || 'http://127.0.0.1:5199/?debug';
++
++export async function openGame({ width = 960, height = 540 } = {}) {
++  let chromium;
++  try { ({ chromium } = require('playwright')); } catch {
++    throw new Error('Playwright was not found. Install it, or in a Claude Code cloud session run with NODE_PATH=$(npm root -g).');
++  }
++  const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
++  const page = await browser.newPage({ viewport: { width, height } });
++  const problems = [];
++  page.on('pageerror', (e) => problems.push(e.message));
++  page.on('console', (m) => { if (m.type() === 'error') problems.push(m.text()); });
++  try { await page.goto(GAME_URL); } catch {
++    await browser.close();
++    throw new Error(`No game at ${GAME_URL}. Start one from projects/cinderdeep-3d: npx vite --port 5199 --strictPort`);
++  }
++  await page.waitForSelector('[data-go=new]');
++  await page.waitForFunction(() => !!window.__cd);
++  const ev = (fn, arg) => page.evaluate(fn, arg);
++  const until = async (fn, ms = 8000, arg) => {
++    const t = Date.now();
++    while (Date.now() - t < ms) { if (await ev(fn, arg)) return true; await page.waitForTimeout(100); }
++    return false;
++  };
++  const game = { browser, page, ev, until, problems };
++  game.close = () => browser.close();
++  return game;
++}
++
++// hide the HUD, damage numbers and menus so screenshots show only the 3D scene
++export const cleanView = ({ ev }, on = true) => ev((hide) => {
++  for (const id of ['hud', 'numbers', 'screens']) document.getElementById(id).style.visibility = hide ? 'hidden' : '';
++}, on);
++
++// through the menus like a player; ends standing in the floor's entrance, unkillable
++export async function startLife(game, heroId = 'knight') {
++  const { page, ev, until } = game;
++  await page.click('[data-go=new]');
++  await page.click(`.card[data-hero=${heroId}]`);
++  if (!(await until(() => window.__cd.G.state === 'playing' && window.__cd.G.room && window.__cd.G.room.state === 'cleared', 15000))) throw new Error('the life did not start');
++  await ev(() => window.__cd.god(true));
++}
++
++// the doors to take from the current room to the nearest room of a type (breadth first), or null
++export const route = ({ ev }, type) => ev((want) => {
++  const { G } = window.__cd;
++  const rooms = G.floorMap.rooms;
++  const prev = new Map([[G.node.id, null]]);
++  const queue = [G.node.id];
++  while (queue.length) {
++    const id = queue.shift();
++    if (rooms[id].type === want && id !== G.node.id) {
++      const path = [];
++      for (let c = id; prev.get(c); c = prev.get(c).from) path.unshift(prev.get(c).side);
++      return path;
++    }
++    for (const [side, to] of Object.entries(rooms[id].doors)) if (!prev.has(to)) { prev.set(to, { from: id, side }); queue.push(to); }
++  }
++  return null;
++}, type);
++
++// take the first card of any level-up or shrine choice that opened, so walking can go on
++export const settle = ({ ev }) => ev(() => {
++  for (let i = 0; i < 20; i++) {
++    const { G, screens } = window.__cd;
++    const top = screens.top();
++    const card = top && (G.state === 'levelup' ? top.querySelector('.card[data-pick]') : G.state === 'choice' ? top.querySelector('.card[data-opt]:not([disabled])') : null);
++    if (!card) return;
++    card.click();
++  }
++});
++
++async function clearRoom(game) {
++  const { ev, until, page } = game;
++  for (let i = 0; i < 12 && !(await ev(() => window.__cd.G.room.state === 'cleared')); i++) {
++    await until(() => window.__cd.G.enemies.length > 0 || window.__cd.G.room.state === 'cleared', 5000);
++    await ev(() => window.__cd.killAll());
++    await page.waitForTimeout(250);
++    await settle(game);
++  }
++  return until(() => window.__cd.G.room.state === 'cleared', 8000);
++}
++
++// stand on a door's threshold and wait for the next room
++async function through(game, side) {
++  const { ev, page } = game;
++  await settle(game);
++  const before = await ev(() => window.__cd.G.node.id);
++  await ev((s) => { const at = { n: [0, -10], s: [0, 10], e: [14.4, 0], w: [-14.4, 0] }[s]; window.__cd.tp(at[0], at[1]); }, side);
++  for (const t = Date.now(); Date.now() - t < 8000; await page.waitForTimeout(100)) {
++    await settle(game);
++    if (await ev((b) => window.__cd.G.node.id !== b && window.__cd.G.state === 'playing', before)) return true;
++  }
++  return false;
++}
++
++// walk to the nearest room of a type, clearing every room on the way; false if the floor has none
++export async function goTo(game, type) {
++  const path = await route(game, type);
++  if (!path) return false;
++  for (const side of path) {
++    if (!(await game.ev(() => window.__cd.G.room.state === 'cleared')) && !(await clearRoom(game))) return false;
++    if (!(await through(game, side))) return false;
++  }
++  return true;
++}
++
++export const toFloor = async (game, floor) => {
++  await settle(game);
++  await game.ev((n) => { window.__cd.toFloor(n); window.__cd.god(true); }, floor);
++  await game.until(() => window.__cd.G.state === 'playing' && window.__cd.G.node.type === 'start', 8000);
++};
++
++export async function shoot({ page }, file) {
++  mkdirSync(dirname(file), { recursive: true });
++  await page.screenshot({ path: file });
++  return file;
++}
++
++// every screenshot on one page, labelled, saved as one image
++export async function contactSheet({ browser }, files, out, { cols = 4, width = 320 } = {}) {
++  const page = await browser.newPage({ viewport: { width: cols * (width + 8) + 8, height: 200 } });
++  const cells = files.map((f) => `<figure><img src="data:image/png;base64,${readFileSync(f).toString('base64')}"><figcaption>${basename(f, '.png')}</figcaption></figure>`).join('');
++  await page.setContent(`<style>body{margin:0;padding:4px;background:#140d0a;font:12px sans-serif;color:#e8dcc8;display:grid;grid-template-columns:repeat(${cols},${width}px);gap:8px}
++    figure{margin:0}img{width:${width}px;display:block;border-radius:4px}figcaption{padding:3px 0}</style>${cells}`);
++  mkdirSync(dirname(out), { recursive: true });
++  await page.screenshot({ path: out, fullPage: true });
++  await page.close();
++  return out;
++}
+diff --git a/projects/cinderdeep-3d/jobs/enemies-and-assets/README.md b/projects/cinderdeep-3d/jobs/other-claude-enemies-and-assets/README.md
+similarity index 93%
+rename from projects/cinderdeep-3d/jobs/enemies-and-assets/README.md
+rename to projects/cinderdeep-3d/jobs/other-claude-enemies-and-assets/README.md
+index 5da7acc..2789369 100644
+--- a/projects/cinderdeep-3d/jobs/enemies-and-assets/README.md
++++ b/projects/cinderdeep-3d/jobs/other-claude-enemies-and-assets/README.md
+@@ -30,9 +30,9 @@ assets". Read the [jobs board](../README.md) first; its "Every run" steps apply
+   - Grotto: sporeling, spider, bloat, thornvine, beetle, slime, bat
+   - Frostvault: wraith, wolf, yeti, crystal, snow imp, ice bat
+   - Cinder Core: fire imp, magma slime, ember knight, bomber, salamander, golem
+-- **Behaviors:** nine (`melee`, `caster`, `flutter`, `hop`, `lunge`, `charger`, `slam`,
+-  `lobber`, `bloat`), plus enemy data for shields, armor, splitting and death blasts. Every
+-  attack is telegraphed on the floor.
++- **Behaviors:** eleven for enemies (`melee`, `caster`, `flutter`, `hop`, `lunge`,
++  `charger`, `slam`, `lobber`, `bloat`, `breather`, `turret`), plus `boss`. Enemy data also
++  covers shields, armor, splitting and death blasts. Every attack is telegraphed on the floor.
+ - **Bosses:** Bone Colossus, Mother Sporecap, Rime Wyrm and Cinder King. Each has phases,
+   an intro cinematic, and an altar of three relics when it falls.
+ - **Elites:** a gold ring and a glow, more health and damage, and relic drops. There are no
+diff --git a/projects/cinderdeep-3d/jobs/other-claude-enemies-and-assets/tools/bestiary.mjs b/projects/cinderdeep-3d/jobs/other-claude-enemies-and-assets/tools/bestiary.mjs
+new file mode 100644
+index 0000000..00f004f
+--- /dev/null
++++ b/projects/cinderdeep-3d/jobs/other-claude-enemies-and-assets/tools/bestiary.mjs
+@@ -0,0 +1,46 @@
++// Every enemy and boss at a glance, by region.
++//   node bestiary.mjs                  all regions and bosses
++//   node bestiary.mjs --enemy yeti     one enemy's full definition
++//   node bestiary.mjs --boss rimeWyrm  one boss's moves by phase
++import { ENEMIES, REGION_POOLS } from '../../../src/data/enemies.js';
++import { BOSSES } from '../../../src/data/bosses.js';
++import { REGIONS } from '../../../src/data/regions.js';
++
++const args = process.argv.slice(2);
++const table = (rows) => {
++  const w = rows[0].map((_, i) => Math.max(...rows.map((r) => String(r[i]).length)));
++  for (const r of rows) console.log(`  ${r.map((c, i) => String(c).padEnd(w[i])).join('  ')}`);
++};
++const plain = (o) => JSON.stringify(o, (k, v) => (typeof v === 'function' ? '[function]' : v), 2);
++
++const one = (flag, set) => { const i = args.indexOf(flag); return i >= 0 ? [args[i + 1], set[args[i + 1]]] : null; };
++const enemy = one('--enemy', ENEMIES);
++if (enemy) { console.log(enemy[1] ? plain(enemy[1]) : `No enemy "${enemy[0]}". Ids: ${Object.keys(ENEMIES).join(', ')}`); process.exit(enemy[1] ? 0 : 1); }
++const boss = one('--boss', BOSSES);
++if (boss) {
++  const b = boss[1];
++  if (!b) { console.log(`No boss "${boss[0]}". Ids: ${Object.keys(BOSSES).join(', ')}`); process.exit(1); }
++  console.log(`${b.name}, ${b.title}: ${b.hp} health, ${b.damage} damage, minions ${b.minion.join(', ')}`);
++  for (let phase = 0; phase <= 2; phase++) console.log(`  phase ${phase + 1}: ${b.moves.filter((m) => (m.minPhase || 0) <= phase).map((m) => `${m.id} (${m.type})`).join(', ')}`);
++  process.exit(0);
++}
++
++const traits = (d) => ['fly', 'shield', 'phase', 'stationary', 'heavy', 'small'].filter((t) => d[t])
++  .concat(d.armor ? [`armor ${Math.round(d.armor * 100)}%`] : [], d.split ? [`splits into ${d.splitCount} ${d.split}`] : [], d.deathBlast ? ['death blast'] : []).join(', ');
++const seen = new Set();
++for (const region of REGIONS) {
++  console.log(`\n${region.name} (hazard: ${region.hazard}; boss: ${BOSSES[region.boss].name})`);
++  const rows = [['id', 'name', 'health', 'damage', 'speed', 'ai', 'body', 'traits']];
++  for (const id of REGION_POOLS[region.id]) {
++    const d = ENEMIES[id];
++    seen.add(id);
++    if (d.split) seen.add(d.split);
++    rows.push([id, d.name, d.hp, d.damage, d.speed, d.ai, d.look?.preset || d.model, traits(d)]);
++  }
++  table(rows);
++}
++const extra = Object.keys(ENEMIES).filter((id) => !seen.has(id));
++if (extra.length) console.log(`\nNot in any region pool: ${extra.join(', ')}`);
++console.log('\nBosses');
++table([['id', 'name', 'health', 'damage', 'moves'], ...Object.values(BOSSES).map((b) => [b.id, b.name, b.hp, b.damage, b.moves.length])]);
++console.log(`\n${Object.keys(ENEMIES).length} enemies, ${Object.keys(BOSSES).length} bosses. Stats are floor-1 values; each floor adds 12% health and 7% damage.`);
+diff --git a/projects/cinderdeep-3d/jobs/other-claude-enemies-and-assets/tools/gallery.mjs b/projects/cinderdeep-3d/jobs/other-claude-enemies-and-assets/tools/gallery.mjs
+new file mode 100644
+index 0000000..5bb66db
+--- /dev/null
++++ b/projects/cinderdeep-3d/jobs/other-claude-enemies-and-assets/tools/gallery.mjs
+@@ -0,0 +1,49 @@
++// Spawn every enemy in front of the hero and screenshot it, optionally as an elite and with the bosses.
++//   node gallery.mjs                  every enemy
++//   node gallery.mjs yeti golem       only these
++//   node gallery.mjs --elite          as elites
++//   node gallery.mjs --bosses         the four bosses (walks to each boss room)
++// Output: jobs/other-claude-enemies-and-assets/out/gallery/*.png and sheet.png (not committed).
++import { fileURLToPath } from 'node:url';
++import { ENEMIES } from '../../../src/data/enemies.js';
++import { REGIONS } from '../../../src/data/regions.js';
++import { openGame, cleanView, startLife, toFloor, goTo, shoot, contactSheet } from '../../lib/browser.mjs';
++
++const out = fileURLToPath(new URL('../out/gallery/', import.meta.url));
++const args = process.argv.slice(2);
++const elite = args.includes('--elite');
++const pick = args.filter((a) => ENEMIES[a]);
++const kinds = args.includes('--bosses') && !pick.length ? [] : pick.length ? pick : Object.keys(ENEMIES);
++
++const game = await openGame();
++const files = [];
++try {
++  await startLife(game);
++  await cleanView(game);
++  for (const kind of kinds) {
++    // clear the last one away without a kill, so no rewards or level-ups get in the way
++    await game.ev(() => { window.__cd.G.enemies.length = 0; window.__cd.G.projectiles.length = 0; });
++    await game.ev(([k, el]) => { const p = window.__cd.G.player; window.__cd.spawn(k, p.x, p.z - 3.2, el); }, [kind, elite]);
++    // let it rise from its spawn column, then hold the frame still
++    await game.until(() => window.__cd.G.enemies.some((e) => e.state !== 'spawn'), 4000);
++    await game.page.waitForTimeout(500);
++    await game.ev(() => window.__cd.game.pause());
++    await game.page.waitForTimeout(150);
++    files.push(await shoot(game, `${out}${kind}${elite ? '-elite' : ''}.png`));
++    await game.ev(() => window.__cd.game.resume());
++  }
++  if (args.includes('--bosses')) {
++    for (const [i, region] of REGIONS.entries()) {
++      await toFloor(game, i * 3 + 3);
++      if (!(await goTo(game, 'boss'))) { console.log(`${region.id}: no boss room`); continue; }
++      await game.until(() => window.__cd.G.state === 'cinematic', 10000);
++      await game.page.waitForTimeout(1500);
++      files.push(await shoot(game, `${out}boss-${region.boss}.png`));
++    }
++  }
++  console.log(`${files.length} screenshots in ${out}`);
++  if (files.length) console.log(`sheet: ${await contactSheet(game, files, `${out}sheet.png`, { cols: 5, width: 256 })}`);
++  if (game.problems.length) console.log(`browser errors:\n  ${game.problems.join('\n  ')}`);
++} finally {
++  await game.close();
++}
+diff --git a/projects/cinderdeep-3d/src/data/enemies.js b/projects/cinderdeep-3d/src/data/enemies.js
+index fc8778d..ccf4261 100644
+--- a/projects/cinderdeep-3d/src/data/enemies.js
++++ b/projects/cinderdeep-3d/src/data/enemies.js
+@@ -1,4 +1,4 @@
+-// enemy definitions. `ai` picks a behaviour in game/enemies.js, `model` a body plan in render/models.js, `look` its colours.
++// enemy definitions. `ai` picks a behaviour in game/enemies.js, `model` a body plan in render/models/creatures.js, `look` its colours.
+ // Times are seconds, distances are metres on the floor.
+ export const ENEMIES = {
+   // ---- The Ossuary ----
+diff --git a/projects/cinderdeep-3d/src/main.js b/projects/cinderdeep-3d/src/main.js
+index 68018cc..b3605c7 100644
+--- a/projects/cinderdeep-3d/src/main.js
++++ b/projects/cinderdeep-3d/src/main.js
+@@ -229,4 +229,4 @@ showTitleScene();
+ screens.title();
+ requestAnimationFrame(frame);
+ // ?debug loads the test hooks (kept out of the normal bundle)
+-if (new URLSearchParams(location.search).has('debug')) import('./debug.js').then((m) => m.installDebug({ game, G, renderer, save, actors, fx, bus, screens, input, flow }));
++if (new URLSearchParams(location.search).has('debug')) import('./debug.js').then((m) => m.installDebug({ game, G, renderer, save, actors, fx, bus, screens, input, flow, stage }));
+diff --git a/projects/cinderdeep-3d/src/render/renderer.js b/projects/cinderdeep-3d/src/render/renderer.js
+index 64ee90d..424eb29 100644
+--- a/projects/cinderdeep-3d/src/render/renderer.js
++++ b/projects/cinderdeep-3d/src/render/renderer.js
+@@ -75,10 +75,13 @@ export function createRenderer(canvas, getSettings) {
+     const fit = aspect < 1.25 ? Math.min(1.9, 1.25 / aspect) : 1;
+     const zoom = fit * s.zoom * rig.boost;
+     if (view.orbit) {
+-      view.orbit.t += dt;
+-      const a = view.orbit.t * 0.22;
+-      camera.position.set(Math.sin(a) * 15, 8.5, Math.cos(a) * 15 + 2);
+-      camera.lookAt(0, 1.4, 0);
++      // the slow circle behind the title; tools can hold it still and close (speed, dist, height, lookY)
++      const o = view.orbit;
++      o.t += dt * (o.speed ?? 1);
++      const a = o.t * 0.22;
++      const d = o.dist ?? 15;
++      camera.position.set(Math.sin(a) * d, o.height ?? 8.5, Math.cos(a) * d + (o.dist ? 0 : 2));
++      camera.lookAt(0, o.lookY ?? 1.4, 0);
+     } else {
+       let lead = 0.18;
+       let tx = focus.x;
+diff --git a/projects/cinderdeep-3d/src/render/stage.js b/projects/cinderdeep-3d/src/render/stage.js
+index e22b732..6905ae2 100644
+--- a/projects/cinderdeep-3d/src/render/stage.js
++++ b/projects/cinderdeep-3d/src/render/stage.js
+@@ -1,7 +1,7 @@
+ import * as THREE from 'three';
+ import gsap from 'gsap';
+ import { HEROES } from '../data/heroes.js';
+-import { buildHeroModel } from './models/heroes.js';
++import { buildHeroModel, formScale } from './models/heroes.js';
+ 
+ // the hero on a pedestal in the middle of the room: the title and hero-select backdrop
+ export function createStage(scene) {
+@@ -21,21 +21,23 @@ export function createStage(scene) {
+   glow.position.set(2.5, 3, 3);
+   group.add(glow);
+   let model = null;
+-  let heroId = null;
++  let shown = null;
+   let phase = 0;
+ 
+-  function show(id) {
++  // forms: a beast's evolutions, which make the body bigger
++  function show(id, forms = []) {
+     group.visible = true;
+-    if (heroId === id) return;
+-    heroId = id;
+-    if (model) { group.remove(model.root); model.dispose(); }
+-    model = buildHeroModel(HEROES[id]);
++    const key = `${id}:${forms.join(',')}`;
++    if (shown === key) return;
++    shown = key;
++    if (model) { gsap.killTweensOf(model.root.scale); group.remove(model.root); model.dispose(); }
++    model = buildHeroModel(HEROES[id], forms);
+     model.root.position.y = 0.6;
+-    model.root.scale.setScalar(1.25);
++    const size = 1.25 * formScale(forms);
+     group.add(model.root);
+-    gsap.fromTo(model.root.scale, { x: 0.01, y: 0.01, z: 0.01 }, { x: 1.25, y: 1.25, z: 1.25, duration: 0.5, ease: 'back.out(1.8)' });
++    gsap.fromTo(model.root.scale, { x: 0.01, y: 0.01, z: 0.01 }, { x: size, y: size, z: size, duration: 0.5, ease: 'back.out(1.8)' });
+   }
+-  function hide() { group.visible = false; heroId = null; if (model) { gsap.killTweensOf(model.root.scale); group.remove(model.root); model.dispose(); model = null; } }
++  function hide() { group.visible = false; shown = null; if (model) { gsap.killTweensOf(model.root.scale); group.remove(model.root); model.dispose(); model = null; } }
+   function update(dt, t) {
+     if (!model) return;
+     phase += dt;
