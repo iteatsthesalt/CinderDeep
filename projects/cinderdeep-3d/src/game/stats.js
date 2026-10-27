@@ -12,7 +12,7 @@ export function computeStats(hero, build, atlasSpent = []) {
     damageMul: 1, attackSpeed: 1, regen: b.regen || 0, pickup: 2.6, dashes: 2 + (b.dashes || 0), dashCdMul: 1, abilityCdMul: 1, power: 1,
     pierce: 0, multi: 0, arcMul: 1, reachMul: 1, burnChance: b.burn || 0, chillChance: b.chill || 0,
     lifesteal: 0, killHeal: b.killHeal || 0, thorns: 0, goldMul: 1, xpMul: 1, potionMax: 2,
-    rage: !!b.rage, guard: !!b.guard, fireproof: !!b.fireproof, scale: 1,
+    rage: !!b.rage, guard: !!b.guard, fireproof: !!b.fireproof, chilledMul: b.chilledMul || 1, knockRes: b.knockRes || 0, scale: 1,
   };
   const lv = Math.max(0, (build.level || 1) - 1);
   s.maxHp += lv * 4;

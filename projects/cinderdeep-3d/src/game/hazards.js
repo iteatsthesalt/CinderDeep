@@ -16,7 +16,7 @@ export function addBlast(G, bus, { x, z, r, delay, damage, kind = 'blast', hurts
 function detonate(G, bus, h) {
   const p = G.player;
   if (!p.dead && Math.hypot(p.x - h.x, p.z - h.z) < h.r + p.r) hurtPlayer(G, bus, h.damage, Math.atan2(p.z - h.z, p.x - h.x), 6, null, h.kind);
-  if (h.hurtsEnemies) for (const e of G.enemies) if (!e.dead && e.state !== 'spawn' && Math.hypot(e.x - h.x, e.z - h.z) < h.r + e.r) damageEnemy(G, bus, e, Math.round(h.damage * 1.2), { ang: Math.atan2(e.z - h.z, e.x - h.x), knock: 5 });
+  if (h.hurtsEnemies) for (const e of G.enemies) if (!e.dead && e.state !== 'spawn' && Math.hypot(e.x - h.x, e.z - h.z) < h.r + e.r) damageEnemy(G, bus, e, Math.round(h.damage * 1.2), { ang: Math.atan2(e.z - h.z, e.x - h.x), knock: 5, env: true });
   bus.emit('blast', h);
   h.dead = true;
 }
@@ -100,7 +100,7 @@ export function updateHazards(G, bus, dt) {
         for (const e of G.enemies) {
           if (e.dead || e.state === 'spawn' || e.def.fly || h.hit.has(e.id) || !hurt(e.x, e.z, e.r)) continue;
           h.hit.add(e.id);
-          damageEnemy(G, bus, e, 14 + G.floor, { ang: 0, knock: 0 });
+          damageEnemy(G, bus, e, 14 + G.floor, { ang: 0, knock: 0, env: true });
         }
       }
     } else if (h.type === 'vent') {

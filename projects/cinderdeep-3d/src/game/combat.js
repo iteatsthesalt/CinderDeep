@@ -98,6 +98,8 @@ export function rollDamage(G, base) {
 export function damageEnemy(G, bus, e, amount, o = {}) {
   if (e.dead || e.state === 'spawn') return false;
   if (e.invuln > 0) { bus.emit('immune', { x: e.x, z: e.z }); return false; }
+  // the player's own blows land harder on chilled foes for heroes that care (Frostkit)
+  if (!o.burnTick && !o.env && (e.chill > 0 || e.frozen > 0)) amount = Math.round(amount * G.player.stats.chilledMul);
   // a shield takes most of a blow that lands from the front
   if (e.def.shield && o.ang !== undefined && !o.burnTick && Math.abs(angDiff(e.face + Math.PI, o.ang)) < 1.05) {
     amount = Math.max(1, Math.round(amount * 0.2));
@@ -173,8 +175,8 @@ export function hurtPlayer(G, bus, raw, ang, knock = 4, src = null, kind = '') {
   p.hp -= amount;
   p.iframes = 0.6;
   p.hurtT = 0.25;
-  p.kx += Math.cos(ang) * knock;
-  p.kz += Math.sin(ang) * knock;
+  p.kx += Math.cos(ang) * knock * (1 - p.stats.knockRes);
+  p.kz += Math.sin(ang) * knock * (1 - p.stats.knockRes);
   G.combo.n = 0;
   G.hitstop = Math.max(G.hitstop, 0.07);
   bus.emit('damage', { x: p.x, y: 1.9, z: p.z, amount, crit: false, target: 'player' });

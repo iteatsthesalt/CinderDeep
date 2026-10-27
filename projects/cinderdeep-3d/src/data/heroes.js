@@ -35,11 +35,11 @@ export const HEROES = {
   mossling: beast('mossling', 'Mossling', 'nature', 'thornClaws', 'heal', 'Nature beast. Grows at level 5, chooses its final form at 12.', 'Slowly regenerates.',
     { maxHp: 105, speed: 5.6, regen: 0.6 }, { coat: 0x5a9a3a, belly: 0xc8ff8a, eye: 0xe8ff9a, crest: 0x9aff5a, ears: true }),
   frostkit: beast('frostkit', 'Frostkit', 'frost', 'frostClaws', 'nova', 'Frost beast. Grows at level 5, chooses its final form at 12.', 'Its claws slow; deals more to chilled foes.',
-    { maxHp: 90, speed: 6.2, chill: 0.4 }, { coat: 0x8ad0ff, belly: 0xffffff, eye: 0xcff4ff, crest: 0xbfe8ff, ears: true }),
+    { maxHp: 90, speed: 6.2, chill: 0.4, chilledMul: 1.25 }, { coat: 0x8ad0ff, belly: 0xffffff, eye: 0xcff4ff, crest: 0xbfe8ff, ears: true }),
   sparkmite: beast('sparkmite', 'Sparkmite', 'storm', 'sparkMandibles', 'chain', 'Storm beast. Grows at level 5, chooses its final form at 12.', 'Bites arc to a nearby foe.',
     { maxHp: 80, speed: 6.8 }, { coat: 0xf0e040, belly: 0xfff8d0, eye: 0xffffff, crest: 0xaee0ff, ears: true }),
   pebblet: beast('pebblet', 'Pebblet', 'earth', 'stoneFists', 'slam', 'Earth beast. Grows at level 5, chooses its final form at 12.', 'Armoured and hard to push.',
-    { maxHp: 140, speed: 5.0, armor: 0.1 }, { coat: 0x8a7a6a, belly: 0xc0b0a0, eye: 0xffd0a0, crest: 0xb8a890 }),
+    { maxHp: 140, speed: 5.0, armor: 0.1, knockRes: 0.6 }, { coat: 0x8a7a6a, belly: 0xc0b0a0, eye: 0xffd0a0, crest: 0xb8a890 }),
   gloomling: beast('gloomling', 'Gloomling', 'shadow', 'shadowClaws', 'dashstrike', 'Shadow beast. Grows at level 5, chooses its final form at 12.', '+5% critical chance; kills heal.',
     { maxHp: 85, speed: 6.6, crit: 0.1, killHeal: 2 }, { coat: 0x3a2a5a, belly: 0x6a4a9a, eye: 0xd8a0ff, crest: 0xb07aff, ears: true }),
 };

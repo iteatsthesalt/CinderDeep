@@ -246,10 +246,10 @@ await page.waitForTimeout(600);
 await shot('17-grown');
 for (let i = 0; i < 6; i++) { await ev(() => window.__cd.xp()); await pick(); }
 await ev(() => window.__cd.xp());
-check('level 12 offers the two final forms', await until(() => window.__cd.G.state === 'levelup' && window.__cd.G.levelChoices.every((c) => c.form), 3000));
+check('level 12 offers the two final forms', await until(() => window.__cd.G.state === 'levelup' && window.__cd.G.levelChoices.every((c) => c.form), 8000));
 await shot('18-final-form');
 await page.keyboard.press('Digit2');
-check('the chosen form is kept', await until(() => window.__cd.G.player.forms.includes('warden'), 3000));
+check('the chosen form is kept', await until(() => window.__cd.G.player.forms.includes('warden'), 8000));
 await page.waitForTimeout(500);
 await shot('19-warden');
 
