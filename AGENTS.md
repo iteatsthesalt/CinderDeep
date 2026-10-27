@@ -1,5 +1,8 @@
 # CinderDeep development
 
+Read `RESTART_HERE.md` for the previous session's stopping point and unresolved context.
+The user paused development; follow the new task rather than automatically running a backlog.
+
 The only active development line is `main`; the game is in `projects/cinderdeep-3d/`.
 Read `ACTIVE_VERSION.json` and `VERSION_HISTORY.md` before making changes.
 Run `python3 tools/check_active_version.py` before installation, development, or commits.

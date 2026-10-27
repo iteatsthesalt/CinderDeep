@@ -6,6 +6,7 @@ This is the world-development job record, not a second game or a fresh-build bri
 
 ## Current status
 
+- Paused at the user's request for a clean chat restart. Read `../../RESTART_HERE.md` before resuming; no further world implementation is in progress.
 - Completed: version consolidation, recovery archives, canonical-main guards and corrected environment setup.
 - Verified baseline: production build and a browser smoke covering title, 19 character choices, life start, room enemies, movement, pause and resume.
 - Completed world increment: reproducible room layouts, region-specific architecture, protected traversal/interaction space, safer initial hazard placement, collision-center recovery and room/hazard resource cleanup.
