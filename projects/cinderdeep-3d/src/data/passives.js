@@ -1,0 +1,26 @@
+// Level-up choices. Each rank calls apply() once on the stat block. Ids match earlier saves.
+export const PASSIVES = [
+  { id: 'sharp', name: 'Whetted Edge', cat: 'offense', max: 5, desc: '+15% damage.', apply: (s) => { s.damageMul *= 1.15; } },
+  { id: 'swift', name: 'Quick Hands', cat: 'offense', max: 4, desc: '+12% attack speed.', apply: (s) => { s.attackSpeed *= 1.12; } },
+  { id: 'keen', name: 'Keen Eye', cat: 'offense', max: 4, desc: '+8% critical chance and stronger criticals.', apply: (s) => { s.crit += 0.08; s.critMul += 0.15; } },
+  { id: 'multi', name: 'Twin Shot', cat: 'offense', max: 2, desc: 'One more projectile, or a wider swing.', apply: (s) => { s.multi += 1; s.arcMul *= 1.2; } },
+  { id: 'pierce', name: 'Piercing', cat: 'offense', max: 3, desc: 'Projectiles pass through one more foe.', needs: (w) => w.kind === 'ranged', apply: (s) => { s.pierce += 1; } },
+  { id: 'cleave', name: 'Wide Cleave', cat: 'offense', max: 3, desc: '+18% swing arc and reach.', needs: (w) => w.kind === 'melee', apply: (s) => { s.arcMul *= 1.18; s.reachMul *= 1.08; } },
+  { id: 'vital', name: 'Vitality', cat: 'defense', max: 5, desc: '+25 maximum health.', apply: (s) => { s.maxHp += 25; } },
+  { id: 'plate', name: 'Ember Plate', cat: 'defense', max: 4, desc: '+8% damage reduction.', apply: (s) => { s.armor = Math.min(0.75, s.armor + 0.08); } },
+  { id: 'regen', name: 'Ember Rest', cat: 'defense', max: 3, desc: 'Regain 0.5 health per second.', apply: (s) => { s.regen += 0.5; } },
+  { id: 'thorns', name: 'Thorned Hide', cat: 'defense', max: 3, desc: 'Reflect 6 damage to whatever hits you up close.', apply: (s) => { s.thorns += 6; } },
+  { id: 'leech', name: 'Bloodletting', cat: 'defense', max: 3, desc: 'Heal for 2% of the damage you deal.', apply: (s) => { s.lifesteal += 0.02; } },
+  { id: 'kindle', name: 'Kindling', cat: 'element', max: 3, desc: '+25% chance to set foes burning.', apply: (s) => { s.burnChance += 0.25; } },
+  { id: 'chill', name: 'Rime Touch', cat: 'element', max: 3, desc: '+25% chance to slow foes.', apply: (s) => { s.chillChance += 0.25; } },
+  { id: 'boots', name: 'Windwalker', cat: 'utility', max: 4, desc: '+8% movement speed.', apply: (s) => { s.speed *= 1.08; } },
+  { id: 'magnet', name: 'Magnetism', cat: 'utility', max: 3, desc: '+50% pickup radius.', apply: (s) => { s.pickup *= 1.5; } },
+  { id: 'scholar', name: 'Scholar', cat: 'utility', max: 3, desc: '+15% experience.', apply: (s) => { s.xpMul *= 1.15; } },
+  { id: 'midas', name: 'Gilded Touch', cat: 'utility', max: 3, desc: '+25% gold.', apply: (s) => { s.goldMul *= 1.25; } },
+  { id: 'flasks', name: 'Deep Flasks', cat: 'utility', max: 3, desc: 'Carry one more flask.', apply: (s) => { s.potionMax += 1; } },
+  { id: 'dasher', name: 'Second Wind', cat: 'utility', max: 2, desc: 'One more dash charge.', apply: (s) => { s.dashes += 1; } },
+  { id: 'quickstep', name: 'Light Step', cat: 'utility', max: 3, desc: 'Dashes recharge 14% faster.', apply: (s) => { s.dashCdMul *= 0.86; } },
+  { id: 'focus', name: 'Arcane Focus', cat: 'ability', max: 4, desc: 'Abilities recover 12% faster.', apply: (s) => { s.abilityCdMul *= 0.88; } },
+  { id: 'potency', name: 'Potency', cat: 'ability', max: 4, desc: '+25% ability power.', apply: (s) => { s.power *= 1.25; } },
+];
+export const PASSIVE_BY_ID = Object.fromEntries(PASSIVES.map((p) => [p.id, p]));

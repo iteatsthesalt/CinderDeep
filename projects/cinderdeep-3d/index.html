@@ -1,17 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>CinderDeep 3D</title>
-<link rel="stylesheet" href="/src/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0d0908">
+  <title>CinderDeep 3D</title>
+  <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
-<canvas id="stage"></canvas>
-<div id="hud" class="hidden"></div>
-<div id="floaters"></div>
-<div id="screen"></div>
-<div id="curtain"></div>
-<script type="module" src="/src/main.js"></script>
+  <canvas id="stage" aria-label="CinderDeep 3D game view"></canvas>
+  <div id="numbers" aria-hidden="true"></div>
+  <div id="hud" hidden></div>
+  <div id="screens"></div>
+  <div id="fade" aria-hidden="true"></div>
+  <noscript>CinderDeep 3D needs JavaScript and WebGL.</noscript>
+  <script type="module" src="/src/main.js"></script>
 </body>
 </html>

@@ -1,169 +1,177 @@
-import gsap from 'gsap';
-import { ABILITIES } from '../data/content.js';
-import { sfx } from '../core/audio.js';
-import { clamp, dist, angDiff, yawFor, rand } from './util.js';
-import { damageEnemy, spawnProjectile, explode, chainFrom } from './combat.js';
-import { ROOM } from '../render/room.js';
+import { HEROES } from '../data/heroes.js';
+import { WEAPONS } from '../data/weapons.js';
+import { ABILITIES } from '../data/abilities.js';
+import { turnToward } from '../core/math.js';
+import { moveEntity } from './room.js';
+import { applyKnockback, damageEnemy, inCone, rollDamage, spawnProjectile, chainFrom } from './combat.js';
+import { useAbility, updateAbility } from './abilities.js';
 
-export function resolveBounds(g, ent, r) {
-  const { HX, HZ } = ROOM;
-  ent.x = clamp(ent.x, -HX + r, HX - r); ent.z = clamp(ent.z, -HZ + r, HZ - r);
-  for (const c of g.room.colliders) {
-    const dx = ent.x - c.x, dz = ent.z - c.z, d = Math.hypot(dx, dz), min = c.r + r;
-    if (d < min && d > 0.0001) { ent.x = c.x + (dx / d) * min; ent.z = c.z + (dz / d) * min; }
-  }
+const DASH_TIME = 0.18;
+const DASH_DIST = 4.4;
+export const DASH_RECHARGE = 1.6;
+const COMBO_WINDOW = 0.55;
+const BUFFER = 0.22;
+
+export function createPlayer(G, heroId, stats, saved = {}) {
+  return {
+    id: G.nextId++, type: 'player', heroId, x: 0, z: 0, vx: 0, vz: 0, kx: 0, kz: 0, r: 0.4,
+    hp: saved.hp ?? stats.maxHp, maxHp: stats.maxHp, face: -Math.PI / 2, aim: -Math.PI / 2,
+    iframes: 0, hurtT: 0, dead: false, stats, weapon: saved.weapon || HEROES[heroId].weapon,
+    xp: saved.xp || 0, level: saved.level || 1, ranks: saved.ranks || {}, relics: saved.relics || [], forms: saved.forms || [],
+    gold: saved.gold || 0, keys: saved.keys || 0, potions: saved.potions ?? stats.potionMax,
+    dash: { t: 0, dx: 0, dz: -1, charges: [] }, atk: { t: 0, dur: 0, cd: 0, idx: 0, since: 9, done: true, dir: 0, mul: 1, hand: 1 },
+    ability: { id: HEROES[heroId].ability, cd: 0, t: 0, dx: 0, dz: -1, hit: new Set(), rain: null },
+    guardFirst: stats.guard, queued: { dash: 0, ability: 0, attack: 0 },
+  };
 }
 
-export function updatePlayer(g, dt, input) {
-  const p = g.player, s = g.stats;
+export const dashReady = (p) => p.dash.charges.filter((c) => c <= 0).length;
+
+export function updatePlayer(G, bus, input, dt) {
+  const p = G.player;
+  if (p.dead) return;
+  const s = p.stats;
+  const weapon = WEAPONS[p.weapon];
+  const ability = ABILITIES[p.ability.id];
   p.iframes = Math.max(0, p.iframes - dt);
-  p.atkCd -= dt; p.abilCd = Math.max(0, p.abilCd - dt);
-  // Aim at mouse ground point
-  const gp = g.stage.ground(input.mouse.nx, input.mouse.ny);
-  if (gp) { p.aimX = gp.x; p.aimZ = gp.z; }
-  const aimA = Math.atan2(p.aimZ - p.z, p.aimX - p.x);
-  p.face = aimA;
+  p.hurtT = Math.max(0, p.hurtT - dt);
+  p.atk.cd -= dt;
+  p.atk.since += dt;
+  p.ability.cd -= dt;
+  while (p.dash.charges.length < s.dashes) p.dash.charges.push(0);
+  p.dash.charges.length = s.dashes;
+  for (let i = 0; i < p.dash.charges.length; i++) p.dash.charges[i] = Math.max(0, p.dash.charges[i] - dt);
+  if (s.regen && p.hp < p.maxHp) p.hp = Math.min(p.maxHp, p.hp + s.regen * dt);
 
-  // Dash charges recharge
-  for (let i = 0; i < p.dashCharge.length; i++) if (p.dashCharge[i] > 0) p.dashCharge[i] = Math.max(0, p.dashCharge[i] - dt);
-  while (p.dashCharge.length < s.dashes) p.dashCharge.push(0);
+  const ax = input.aim.x - p.x;
+  const az = input.aim.z - p.z;
+  if (ax * ax + az * az > 0.09) p.aim = Math.atan2(az, ax);
 
-  const ax = input.axis();
-  if (p.dashT > 0) {
-    p.dashT -= dt;
-    p.x += p.dashDx * 22 * dt; p.z += p.dashDz * 22 * dt;
-    if (Math.random() < 0.6) g.fx.burst(p.x, 0.5, p.z, 0xffffff, 1, 1, 0.3);
+  let mx = input.move.x;
+  let mz = input.move.z;
+  const ml = Math.hypot(mx, mz);
+  if (ml > 1) { mx /= ml; mz /= ml; }
+
+  const ox = p.x;
+  const oz = p.z;
+  if (p.ability.t > 0) {
+    updateAbility(G, bus, p, ability, dt, true);
+  } else if (p.dash.t > 0) {
+    const sp = DASH_DIST / DASH_TIME;
+    moveEntity(G.room, p, p.dash.dx * sp * dt, p.dash.dz * sp * dt);
+    p.dash.t -= dt;
+    if (Math.random() < 0.9) bus.emit('dashTrail', { x: p.x, z: p.z });
   } else {
-    const slow = p.hazSlow > 0 ? 0.55 : 1;
-    p.hazSlow = Math.max(0, p.hazSlow - dt);
-    p.x += ax.x * s.speed * slow * dt; p.z += ax.y * s.speed * slow * dt;
-    p.moving = ax.x !== 0 || ax.y !== 0;
-    if (input.hit('Space')) tryDash(g, ax);
-  }
-  resolveBounds(g, p, 0.45);
-
-  if ((input.mouse.down || input.held('KeyJ')) && p.atkCd <= 0 && p.dashT <= 0) attack(g, aimA);
-  if (input.hit('KeyQ')) castAbility(g, aimA);
-  if (input.hit('KeyR')) usePotion(g);
-
-  // Pose
-  const m = p.mesh, t = g.time;
-  m.position.set(p.x, p.dashT > 0 ? 0 : Math.abs(Math.sin(t * 12)) * (p.moving ? 0.08 : 0), p.z);
-  m.rotation.y = yawFor(aimA);
-  m.visible = !(p.iframes > 0 && p.dashT <= 0 && Math.floor(t * 20) % 2);
-  if (p.parts.body && p.moving) p.parts.body.rotation.z = Math.sin(t * 12) * 0.06; else if (p.parts.body) p.parts.body.rotation.z = 0;
-}
-
-function tryDash(g, ax) {
-  const p = g.player, idx = p.dashCharge.findIndex((c) => c <= 0);
-  if (idx < 0) return;
-  p.dashCharge[idx] = 2.2;
-  let dx = ax.x, dz = ax.y;
-  if (!dx && !dz) { dx = Math.cos(p.face); dz = Math.sin(p.face); }
-  p.dashDx = dx; p.dashDz = dz; p.dashT = 0.16; p.iframes = Math.max(p.iframes, 0.28);
-  sfx('dash'); g.fx.ring(p.x, p.z, 1.2, 0xffffff, 0.25);
-  const sq = gsap.timeline();
-  sq.to(p.mesh.scale, { y: 0.75, z: 1.25, duration: 0.07 }).to(p.mesh.scale, { y: p.baseScale, z: p.baseScale, x: p.baseScale, duration: 0.15 });
-}
-
-function attack(g, aimA) {
-  const p = g.player, s = g.stats, w = s.hero.weapon;
-  p.atkCd = 1 / s.rate;
-  const rage = s.hero.rage ? 1 + (1 - p.hp / p.maxHp) * 0.7 : 1;
-  const dmg = s.dmg * rage * rand(0.92, 1.08);
-  const wp = p.parts.weapon;
-  if (w.type === 'melee') {
-    sfx('swing');
-    const reach = w.reach + 0.25 * s.multi, arc = w.arc + 0.5 * s.multi;
-    g.fx.slash(p.x, p.z, aimA, reach, arc, s.hero.accent);
-    gsap.fromTo(wp.rotation, { x: -1.3 }, { x: 0.9, duration: 0.1, ease: 'power2.out' });
-    p.x += Math.cos(aimA) * 0.25; p.z += Math.sin(aimA) * 0.25;
-    let hits = 0;
-    for (const e of g.enemies) {
-      if (e.dead) continue;
-      const d = dist(e, p);
-      if (d > reach + e.def.r * e.scale) continue;
-      if (Math.abs(angDiff(Math.atan2(e.z - p.z, e.x - p.x), aimA)) > arc / 2 + 0.1 && d > 1.0) continue;
-      const a = Math.atan2(e.z - p.z, e.x - p.x);
-      damageEnemy(g, e, dmg, { kx: Math.cos(a), kz: Math.sin(a), knock: w.knock });
-      hits++;
-    }
-    if (hits) g.stage.shake(0.12);
-  } else {
-    sfx('shoot');
-    gsap.fromTo(wp.position, { z: 0.0 }, { z: 0.25, duration: 0.05, yoyo: true, repeat: 1 });
-    const n = 1 + s.multi, spread = 0.14;
-    for (let i = 0; i < n; i++) {
-      const a = aimA + (i - (n - 1) / 2) * spread;
-      spawnProjectile(g, 'player', p.x + Math.cos(a) * 0.7, p.z + Math.sin(a) * 0.7, a, { speed: w.speed, dmg, color: w.color, pierce: s.pierce, burn: w.burn, chain: w.chain });
+    const slow = p.atk.dur > 0 ? 0.55 : 1;
+    // on ice the body keeps some of its momentum
+    if (p.slick) {
+      const k = 1 - Math.exp(-3 * dt);
+      p.slideX = (p.slideX || 0) + (mx * s.speed * slow - (p.slideX || 0)) * k;
+      p.slideZ = (p.slideZ || 0) + (mz * s.speed * slow - (p.slideZ || 0)) * k;
+      moveEntity(G.room, p, p.slideX * dt, p.slideZ * dt);
+    } else {
+      p.slideX = mx * s.speed * slow;
+      p.slideZ = mz * s.speed * slow;
+      moveEntity(G.room, p, p.slideX * dt, p.slideZ * dt);
     }
   }
-}
+  applyKnockback(G.room, p, dt);
+  p.vx = (p.x - ox) / dt;
+  p.vz = (p.z - oz) / dt;
+  if (p.dash.t <= 0 && p.ability.t <= 0) p.face = turnToward(p.face, p.aim, 16 * dt);
 
-export function castAbility(g, aimA) {
-  const p = g.player, s = g.stats;
-  if (p.abilCd > 0) return;
-  const key = s.hero.ability, ab = ABILITIES[key], pw = s.power, D = s.dmg;
-  p.abilCd = p.abilMax = ab.cd * (1 - s.cdr);
-  sfx('ability');
-  const wp = p.parts.weapon;
-  gsap.fromTo(wp.rotation, { x: -1.6 }, { x: 0.6, duration: 0.25, ease: 'back.out(2)' });
-  switch (key) {
-    case 'slam': {
-      g.fx.ring(p.x, p.z, 5 * pw ** 0.3, 0xffb060, 0.45); g.stage.shake(0.5);
-      for (const e of g.enemies) if (!e.dead && dist(e, p) < 4.6 * pw ** 0.3 + e.def.r) {
-        const a = Math.atan2(e.z - p.z, e.x - p.x);
-        damageEnemy(g, e, D * 2.2 * pw, { kx: Math.cos(a), kz: Math.sin(a), knock: 7, stun: 1.3 });
-      }
-      break;
+  // a press that lands a hair too early is remembered for a moment instead of being lost
+  for (const k of ['dash', 'ability', 'attack']) p.queued[k] = input.pressed[k] ? BUFFER : Math.max(0, p.queued[k] - dt);
+  const free = p.dash.t <= 0 && p.ability.t <= 0;
+  if (p.queued.dash > 0 && dashReady(p) > 0 && free) { p.queued.dash = 0; startDash(G, bus, p, ml > 0.1 ? Math.atan2(mz, mx) : p.aim); }
+  else if (p.queued.ability > 0 && p.ability.cd <= 0 && free) { p.queued.ability = 0; useAbility(G, bus, p, ability, input); }
+  else if ((input.attack || p.queued.attack > 0) && p.atk.cd <= 0 && free) { p.queued.attack = 0; startAttack(G, bus, p, weapon); }
+
+  if (p.atk.dur > 0) {
+    p.atk.t += dt;
+    const resolveAt = p.atk.dur * (weapon.kind === 'melee' ? 0.4 : 0.55);
+    if (!p.atk.done && p.atk.t >= resolveAt) {
+      p.atk.done = true;
+      if (weapon.kind === 'melee') meleeHit(G, bus, p, weapon);
+      else fireWeapon(G, bus, p, weapon);
     }
-    case 'fireball':
-      spawnProjectile(g, 'player', p.x, p.z, aimA, { speed: 14, dmg: D * 3 * pw, color: 0xff6a10, size: 0.45, explode: 3.2 * pw ** 0.3, burn: true, r: 0.5 });
-      break;
-    case 'fan':
-      for (let i = -3; i <= 3; i++) spawnProjectile(g, 'player', p.x, p.z, aimA + i * 0.16, { speed: 18, dmg: D * 1.2 * pw, color: s.hero.accent, pierce: 2 + s.pierce, size: 0.18 });
-      break;
-    case 'dashstrike': {
-      const sx = p.x, sz = p.z;
-      let tx = p.x + Math.cos(aimA) * 6.5, tz = p.z + Math.sin(aimA) * 6.5;
-      g.fx.burst(sx, 1, sz, s.hero.accent, 10, 5, 0.5);
-      p.x = tx; p.z = tz; resolveBounds(g, p, 0.45);
-      for (const e of g.enemies) {
-        if (e.dead) continue;
-        const vx = p.x - sx, vz = p.z - sz, L = Math.hypot(vx, vz) || 1;
-        const t = clamp(((e.x - sx) * vx + (e.z - sz) * vz) / (L * L), 0, 1);
-        if (Math.hypot(e.x - (sx + vx * t), e.z - (sz + vz * t)) < 1.5 + e.def.r) damageEnemy(g, e, D * 2.5 * pw, { crit: true, kx: vx / L, kz: vz / L, knock: 4 });
-      }
-      g.fx.burst(p.x, 1, p.z, s.hero.accent, 10, 5, 0.5); p.iframes = Math.max(p.iframes, 0.3);
-      g.stage.snap(p.x, p.z);
-      break;
-    }
-    case 'chain': {
-      let best = null, bd = 11;
-      for (const e of g.enemies) { if (e.dead) continue; const d = dist(e, p); if (d < bd) { bd = d; best = e; } }
-      if (best) { g.fx.bolt(p, best); damageEnemy(g, best, D * 2.2 * pw, {}); chainFrom(g, best, D * 2 * pw, 5); }
-      else p.abilCd = 0.4;
-      break;
-    }
-    case 'cloud': {
-      const d = Math.min(9, dist(p, { x: p.aimX, z: p.aimZ }));
-      const x = p.x + Math.cos(aimA) * d, z = p.z + Math.sin(aimA) * d;
-      g.addZone(x, z, 3 * pw ** 0.3, 5, D * 1.6 * pw, 0x7aff5a);
-      break;
-    }
-    case 'heal':
-      g.healPlayer(p.maxHp * 0.25 * pw); g.fx.ring(p.x, p.z, 2.5, 0x9aff9a, 0.5); g.fx.burst(p.x, 1, p.z, 0x9aff9a, 14, 3, 0.8);
-      break;
-    case 'nova':
-      g.fx.ring(p.x, p.z, 6.5, 0x9be4ff, 0.5); g.stage.shake(0.3);
-      for (const e of g.enemies) if (!e.dead && dist(e, p) < 6.2) damageEnemy(g, e, D * pw, { freeze: 2.5 * pw ** 0.5, chill: true });
-      break;
+    if (p.atk.t >= p.atk.dur) p.atk.dur = 0;
   }
+  updateAbility(G, bus, p, ability, dt, false);
 }
 
-export function usePotion(g) {
-  const p = g.player;
-  if (p.potions <= 0 || p.hp >= p.maxHp) return;
-  p.potions--; g.healPlayer(p.maxHp * 0.4);
-  g.fx.burst(p.x, 1, p.z, 0xff6a7a, 12, 3, 0.8); sfx('pickup');
+function startDash(G, bus, p, ang) {
+  const i = p.dash.charges.findIndex((c) => c <= 0);
+  p.dash.charges[i] = DASH_RECHARGE * p.stats.dashCdMul;
+  p.dash.t = DASH_TIME;
+  p.dash.dx = Math.cos(ang);
+  p.dash.dz = Math.sin(ang);
+  p.iframes = Math.max(p.iframes, DASH_TIME + 0.08 + (HEROES[p.heroId].base.dashGuard ? 0.3 : 0));
+  p.face = ang;
+  bus.emit('dash', { x: p.x, z: p.z, ang });
+}
+
+function startAttack(G, bus, p, weapon) {
+  const a = p.atk;
+  const dur = (weapon.cooldown / p.stats.attackSpeed) * 0.9;
+  a.idx = a.since < COMBO_WINDOW + a.dur ? (a.idx + 1) % 3 : 0;
+  a.dur = dur;
+  a.t = 0;
+  a.done = false;
+  a.dir = p.aim;
+  a.mul = weapon.comboMul ? weapon.comboMul[a.idx] : 1;
+  a.cd = weapon.cooldown / p.stats.attackSpeed;
+  a.since = -dur;
+  a.hand = -a.hand;
+  p.face = p.aim;
+  if (weapon.lunge) moveEntity(G.room, p, Math.cos(p.aim) * weapon.lunge * 0.12, Math.sin(p.aim) * weapon.lunge * 0.12);
+  bus.emit('attackStart', { weapon, idx: a.idx });
+}
+
+// what a weapon does to whatever it touches, beyond damage
+export const weaponOnHit = (p, weapon) => ({
+  burn: Math.max(weapon.burn ? 1 : 0, p.stats.burnChance),
+  chill: Math.max(weapon.chill ? 1 : 0, p.stats.chillChance),
+});
+
+function meleeHit(G, bus, p, weapon) {
+  const s = p.stats;
+  const a = p.atk;
+  const reach = weapon.reach * s.reachMul * (a.mul > 1 ? 1.12 : 1);
+  const arc = weapon.arc * s.arcMul * (a.mul > 1 ? 1.2 : 1);
+  const fx = weaponOnHit(p, weapon);
+  let hits = 0;
+  for (const e of G.enemies) {
+    if (e.dead || e.state === 'spawn') continue;
+    if (!inCone(p.x, p.z, a.dir, reach + e.r, arc, e.x, e.z)) continue;
+    const { amount, crit } = rollDamage(G, weapon.damage * a.mul);
+    damageEnemy(G, bus, e, amount, { crit, ang: a.dir, knock: weapon.knock * (a.mul > 1 ? 1.4 : 1), ...fx });
+    if (weapon.chain && !e.dead) chainFrom(G, bus, e, amount * 0.6, weapon.chain);
+    hits++;
+  }
+  // a swing cuts small missiles out of the air
+  for (const pr of G.projectiles) {
+    if (pr.team !== 'enemy' || pr.dead) continue;
+    if (inCone(p.x, p.z, a.dir, reach, arc, pr.x, pr.z)) { pr.dead = true; bus.emit('projectileEnd', pr); bus.emit('deflect', pr); }
+  }
+  if (hits) G.hitstop = Math.max(G.hitstop, 0.035 + (a.mul > 1 ? 0.03 : 0));
+  bus.emit('slash', { x: p.x, z: p.z, ang: a.dir, reach, arc, idx: a.idx, big: a.mul > 1, hits });
+}
+
+function fireWeapon(G, bus, p, weapon) {
+  const s = p.stats;
+  const n = 1 + s.multi;
+  const fx = weaponOnHit(p, weapon);
+  const side = weapon.model === 'pistols' ? p.atk.hand * 0.3 : 0;
+  for (let i = 0; i < n; i++) {
+    const { amount, crit } = rollDamage(G, weapon.damage);
+    const ang = p.aim + (i - (n - 1) / 2) * 0.14 + (Math.random() - 0.5) * weapon.spread * 2;
+    const ox = Math.cos(p.aim + Math.PI / 2) * side;
+    const oz = Math.sin(p.aim + Math.PI / 2) * side;
+    spawnProjectile(G, {
+      team: 'player', kind: weapon.missile || 'arrow', color: weapon.color, x: p.x + ox + Math.cos(ang) * 0.7, z: p.z + oz + Math.sin(ang) * 0.7, y: 1.2, ang, speed: weapon.speed,
+      damage: amount, crit, life: weapon.life, r: weapon.radius, pierce: weapon.pierce + s.pierce, knock: weapon.knock, chain: weapon.chain || 0, ...fx,
+    });
+  }
+  bus.emit('shoot', { x: p.x, z: p.z, ang: p.aim, weapon });
 }

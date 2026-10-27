@@ -1,214 +1,454 @@
-import gsap from 'gsap';
-import { ENEMIES, BOSSES } from '../data/content.js';
-import { makeEnemy, addCrown, mat } from '../render/models.js';
-import { makeTelegraph, showTelegraph } from '../render/fx.js';
-import { sfx } from '../core/audio.js';
-import { rand, dist, yawFor, pick } from './util.js';
-import { resolveBounds } from './player.js';
-import { spawnProjectile, flashMesh, killEnemy } from './combat.js';
+import { ENEMIES } from '../data/enemies.js';
+import { angDiff, angleTo, clamp, TAU, turnToward } from '../core/math.js';
+import { moveEntity, blockedAt } from './room.js';
+import { applyKnockback, damageEnemy, hurtPlayer, inCone, spawnProjectile } from './combat.js';
+import { addBlast } from './hazards.js';
+import { bossAI } from './boss.js';
 
-let uid = 1;
-
-export function spawnEnemy(g, id, x, z, o = {}) {
-  const boss = BOSSES[id];
-  const def = boss ? { ...boss, ai: 'boss', xp: 60 } : ENEMIES[id];
-  const f = g.life.floor, desc = g.descentBonus();
-  const hpMul = (1 + 0.16 * (f - 1)) * (1 + 0.4 * desc) * (o.hpMul || 1) * (o.elite ? 3 : 1);
-  const scale = (boss ? boss.scale : 1) * (o.elite ? 1.3 : 1) * (o.scaleMul || 1);
-  const mesh = makeEnemy(def.model, o.elite ? 0xe8b830 : def.color, scale);
-  if (o.elite) addCrown(mesh);
-  mesh.position.set(x, 0, z); g.stage.scene.add(mesh);
+export function spawnEnemy(G, bus, kind, x, z, delay = 0.75, elite = false) {
+  const def = ENEMIES[kind];
+  const scale = (1 + 0.12 * (G.floor - 1)) * (elite ? 3 : 1);
+  const size = elite ? 1.3 : 1;
   const e = {
-    uid: uid++, id, def, boss: !!boss, elite: !!o.elite, gen: o.gen || 0, scale,
-    x, z, kx: 0, kz: 0, face: 0, hp: def.hp * hpMul, maxHp: def.hp * hpMul,
-    dmg: def.dmg * (1 + 0.1 * (f - 1)) * (1 + 0.25 * desc) * (o.elite ? 1.3 : 1),
-    mesh, parts: mesh.userData.parts, state: 'move', t: rand(0.2, 1), cd: rand(0.5, 2), spawnT: o.quick ? 0.4 : 0.9,
-    stun: 0, freeze: 0, burn: 0, chill: 0, flash: 0, dead: false, tele: null, atk: null, atkIdx: 0, phase2: false, hitDone: false, dashDir: 0,
+    id: G.nextId++, type: 'enemy', kind, def, x, z, vx: 0, vz: 0, kx: 0, kz: 0, r: def.r * size, elite, size, ghost: !!def.phase,
+    hp: Math.round(def.hp * scale), maxHp: Math.round(def.hp * scale), damage: def.damage * (1 + 0.07 * (G.floor - 1)) * (elite ? 1.3 : 1),
+    face: Math.random() * TAU, state: 'spawn', st: delay, spawnDur: delay, cd: 0.4 + Math.random() * 0.8, tele: null, stun: 0, burn: null,
+    hitFlash: 0, y: def.fly ? 1.5 : 0, lock: 0, dead: false, wob: Math.random() * TAU, hit: false, hidden: false,
+    summonCd: def.summonEvery ? 3 + Math.random() * 4 : 0,
   };
-  e.tele = makeTelegraph('circle'); e.tele2 = null;
-  g.stage.scene.add(e.tele);
-  mesh.scale.setScalar(0.01);
-  gsap.to(mesh.scale, { x: scale, y: scale, z: scale, duration: 0.5, ease: 'back.out(2)' });
-  g.fx.ring(x, z, 1.5 * scale, 0xff4a2a, 0.6);
-  g.enemies.push(e);
+  G.enemies.push(e);
+  bus.emit('enemySpawn', e);
   return e;
 }
 
-function setTele(e, shape, color) {
-  if (e.tele.userData.shape !== shape) {
-    e.tele.parent?.remove(e.tele);
-    e.tele = makeTelegraph(shape, color); e.tele.parent || e.mesh.parent?.add(e.tele);
+const toPlayer = (G, e) => angleTo(e.x, e.z, G.player.x, G.player.z);
+const distPlayer = (G, e) => Math.hypot(G.player.x - e.x, G.player.z - e.z);
+
+function walk(G, e, ang, speed, dt) {
+  if (e.chill > 0) speed *= 0.55;
+  e.vx = Math.cos(ang) * speed;
+  e.vz = Math.sin(ang) * speed;
+  moveEntity(G.room, e, e.vx * dt, e.vz * dt);
+}
+
+function setState(e, state, dur = 0) {
+  e.state = state;
+  e.st = 0;
+  e.dur = dur;
+}
+
+// hold a firing distance: back off when close, close in when far, drift sideways in between
+function kite(G, e, dt, speedMul = 1) {
+  const def = e.def;
+  const d = distPlayer(G, e);
+  const a = toPlayer(G, e);
+  e.face = turnToward(e.face, a, 5 * dt);
+  e.wob += dt * 0.6;
+  if (def.stationary) { e.vx = e.vz = 0; return; }
+  if (d < def.keepAway) walk(G, e, a + Math.PI + Math.sin(e.wob) * 0.5, def.speed * 1.15 * speedMul, dt);
+  else if (d > def.range) walk(G, e, a, def.speed * speedMul, dt);
+  else walk(G, e, a + (Math.PI / 2) * (Math.sin(e.wob) > 0 ? 1 : -1), def.speed * 0.5 * speedMul, dt);
+}
+
+const PATTERNS = {
+  single: () => [0],
+  fan3: () => [-0.3, 0, 0.3],
+  spread5: () => [-0.52, -0.26, 0, 0.26, 0.52],
+  ring8: () => Array.from({ length: 8 }, (_, i) => (i / 8) * TAU),
+};
+
+function fire(G, bus, e, ang) {
+  const def = e.def;
+  const offsets = PATTERNS[def.pattern || 'single']();
+  const turn = def.pattern === 'ring8' ? G.time * 0.7 : 0;
+  for (const o of offsets) {
+    const a = (def.pattern === 'ring8' ? 0 : ang) + o + turn;
+    spawnProjectile(G, {
+      team: 'enemy', kind: def.shotKind || 'orb', x: e.x + Math.cos(a) * 0.7, z: e.z + Math.sin(a) * 0.7, y: def.fly ? 1.4 : 1.0, ang: a,
+      speed: def.shotSpeed, damage: e.damage, life: 2.4, r: 0.26, knock: 3,
+    });
   }
-  e.tele.material.color.set(color || 0xff2a1a);
-}
-const hideTele = (e) => { e.tele.visible = false; };
-
-export function updateEnemies(g, dt) {
-  const p = g.player;
-  for (let i = g.enemies.length - 1; i >= 0; i--) {
-    const e = g.enemies[i];
-    if (e.dead) { g.enemies.splice(i, 1); continue; }
-    if (e.flash > 0) { e.flash -= dt; if (e.flash <= 0) flashMesh(e, false); }
-    if (e.spawnT > 0) { e.spawnT -= dt; poseEnemy(g, e); continue; }
-    if (e.burn > 0) { e.burn -= dt; e.burnTick = (e.burnTick || 0) - dt; if (e.burnTick <= 0) { e.burnTick = 0.5; e.hp -= Math.max(1, g.stats.dmg * 0.25); g.fx.burst(e.x, 1.2, e.z, 0xff7a20, 2, 2, 0.4); } }
-    if (e.hp <= 0 && !e.dead) { killEnemy(g, e); continue; }
-    e.chill = Math.max(0, e.chill - dt);
-    // knockback
-    if (Math.abs(e.kx) + Math.abs(e.kz) > 0.1) { e.x += e.kx * dt * 4; e.z += e.kz * dt * 4; e.kx *= 0.85; e.kz *= 0.85; }
-    if (e.freeze > 0) { e.freeze -= dt; poseEnemy(g, e); continue; }
-    if (e.stun > 0) { e.stun -= dt; hideTele(e); poseEnemy(g, e); continue; }
-    if (g.state === 'intro') { poseEnemy(g, e); continue; }
-    if (e.boss) bossAI(g, e, dt); else ai(g, e, dt);
-    // separation
-    for (const o of g.enemies) {
-      if (o === e || o.dead) continue;
-      const dx = e.x - o.x, dz = e.z - o.z, d = Math.hypot(dx, dz), min = (e.def.r * e.scale + o.def.r * o.scale) * 0.9;
-      if (d < min && d > 0.001) { const push = (min - d) * 0.5; e.x += (dx / d) * push * 0.5; e.z += (dz / d) * push * 0.5; }
-    }
-    if (e.def.ai !== 'turret') resolveBounds(g, e, e.def.r * e.scale * 0.8);
-    poseEnemy(g, e);
-  }
+  bus.emit('enemyShoot', e);
 }
 
-function poseEnemy(g, e) {
-  const t = g.time + e.uid;
-  e.mesh.position.set(e.x, (e.lift || 0) + (e.def.fly ? Math.sin(t * 3) * 0.2 : Math.abs(Math.sin(t * 6)) * 0.05), e.z);
-  e.mesh.rotation.y = yawFor(e.face);
-  if (e.parts.wl) { e.parts.wl.rotation.z = Math.sin(t * 22) * 0.6; e.parts.wr.rotation.z = -Math.sin(t * 22) * 0.6; }
-  if (e.freeze > 0) e.mesh.rotation.z = 0.05;
-}
-
-function moveToward(g, e, tx, tz, speed, dt) {
-  const a = Math.atan2(tz - e.z, tx - e.x), sp = speed * (e.chill > 0 ? 0.55 : 1);
-  e.x += Math.cos(a) * sp * dt; e.z += Math.sin(a) * sp * dt;
-}
-
-const hit = (g, e, cx, cz, r, dmg = e.dmg) => { if (dist(g.player, { x: cx, z: cz }) < r + 0.4) g.hurtPlayer(dmg, e); };
-
-function ai(g, e, dt) {
-  const p = g.player, d = dist(e, p), def = e.def;
-  const toP = Math.atan2(p.z - e.z, p.x - e.x);
-  e.cd -= dt;
-  if (e.state === 'move') {
-    e.face = toP;
-    const spd = def.spd;
-    switch (def.ai) {
-      case 'melee': case 'slam': {
-        moveToward(g, e, p.x, p.z, spd, dt);
-        const reach = def.ai === 'slam' ? 2.2 : 1.3 + def.r * e.scale;
-        if (d < reach + 0.4 && e.cd <= 0) { e.state = 'wind'; e.t = def.ai === 'slam' ? 0.9 : 0.55; e.tmax = e.t; sfx('warn'); }
-        break;
+const AI = {
+  melee(G, bus, e, dt) {
+    const def = e.def;
+    const d = distPlayer(G, e);
+    e.cd -= dt;
+    if (e.state === 'chase') {
+      e.face = turnToward(e.face, toPlayer(G, e), 6 * dt);
+      if (d > def.reach * 0.75) walk(G, e, e.face, def.speed, dt); else { e.vx = e.vz = 0; }
+      if (d < def.reach + 0.5 && e.cd <= 0 && !G.player.dead) {
+        setState(e, 'windup', def.windup);
+        e.lock = toPlayer(G, e);
+        e.tele = { type: 'cone', ang: e.lock, arc: def.arc, len: def.reach, t: 0 };
+        bus.emit('telegraph', e);
       }
-      case 'lunge': {
-        if (d > 5) moveToward(g, e, p.x, p.z, spd, dt);
-        else { const a = toP + Math.PI / 2 * (e.uid % 2 ? 1 : -1); e.x += Math.cos(a) * spd * 0.6 * dt; e.z += Math.sin(a) * spd * 0.6 * dt; }
-        if (d < 6.5 && e.cd <= 0) { e.state = 'wind'; e.t = 0.65; e.tmax = e.t; e.dashDir = toP; sfx('warn'); }
-        break;
+    } else if (e.state === 'windup') {
+      e.st += dt;
+      e.face = e.lock;
+      e.tele.t = e.st / e.dur;
+      if (e.st >= e.dur) {
+        if (inCone(e.x, e.z, e.lock, def.reach, def.arc, G.player.x, G.player.z, G.player.r)) hurtPlayer(G, bus, e.damage, e.lock, 6, e);
+        moveEntity(G.room, e, Math.cos(e.lock) * 0.6, Math.sin(e.lock) * 0.6);
+        bus.emit('enemyStrike', e);
+        e.tele = null;
+        setState(e, 'recover', def.recover);
       }
-      case 'ranged': case 'fan': case 'turret': {
-        const want = def.range * 0.7;
-        if (def.ai !== 'turret') { if (d > def.range) moveToward(g, e, p.x, p.z, spd, dt); else if (d < want * 0.6) moveToward(g, e, e.x - (p.x - e.x), e.z - (p.z - e.z), spd, dt); }
-        if (d < def.range + 1 && e.cd <= 0) { e.state = 'wind'; e.t = def.ai === 'turret' ? 0.9 : 0.6; e.tmax = e.t; sfx('warn'); }
-        break;
-      }
+    } else if (e.state === 'recover') {
+      e.st += dt;
+      if (e.st >= e.dur) { setState(e, 'chase'); e.cd = def.cooldown; }
     }
-    if (e.state === 'move') hideTele(e);
-  } else if (e.state === 'wind') {
-    e.t -= dt; const prog = 1 - e.t / e.tmax;
-    switch (def.ai) {
-      case 'melee': { setTele(e, 'circle', 0xff2a1a); const R = 1.7; showTelegraph(e.tele, e.x + Math.cos(e.face) * 0.9, e.z + Math.sin(e.face) * 0.9, R, 0, 0, prog); e.mesh.rotation.x = -prog * 0.3; break; }
-      case 'slam': { setTele(e, 'circle', 0xff7a1a); showTelegraph(e.tele, e.x, e.z, 2.8 * e.scale ** 0.5, 0, 0, prog); e.lift = prog * 0.6; break; }
-      case 'lunge': { setTele(e, 'line', 0xff2a1a); showTelegraph(e.tele, e.x, e.z, 1.0, 7, e.dashDir, prog); break; }
-      default: { setTele(e, 'line', 0xff9a1a); e.face = toP; showTelegraph(e.tele, e.x, e.z, 0.35, Math.min(def.range + 2, 11), toP, prog); }
-    }
-    if (e.t <= 0) {
-      hideTele(e); e.mesh.rotation.x = 0; e.lift = 0;
-      switch (def.ai) {
-        case 'melee': {
-          const cx = e.x + Math.cos(e.face) * 0.9, cz = e.z + Math.sin(e.face) * 0.9;
-          g.fx.burst(cx, 0.6, cz, 0xffffff, 4, 3, 0.3); hit(g, e, cx, cz, 1.7);
-          e.state = 'rec'; e.t = 0.5; break;
-        }
-        case 'slam': {
-          g.fx.ring(e.x, e.z, 2.8 * e.scale ** 0.5, 0xff8a2a, 0.3); g.stage.shake(0.2);
-          hit(g, e, e.x, e.z, 2.8 * e.scale ** 0.5); e.state = 'rec'; e.t = 0.8; break;
-        }
-        case 'lunge': e.state = 'dash'; e.t = 0.42; e.hitDone = false; break;
-        case 'turret': case 'ranged': {
-          spawnProjectile(g, 'enemy', e.x, e.z, toP, { speed: 8, dmg: e.dmg, color: def.color === 0xe6dfc6 ? 0xffe9a0 : 0xff5a3a, life: 3, y: 1.2 });
-          sfx('shoot'); e.state = 'rec'; e.t = 0.4; break;
-        }
-        case 'fan':
-          for (let k = -1; k <= 1; k++) spawnProjectile(g, 'enemy', e.x, e.z, toP + k * 0.28, { speed: 7, dmg: e.dmg * 0.8, color: 0xc060ff, life: 3, y: 1.2 });
-          sfx('shoot'); e.state = 'rec'; e.t = 0.5; break;
-      }
-      e.cd = rand(1.2, 2.2) * (def.ai === 'turret' ? 0.9 : 1);
-    }
-  } else if (e.state === 'dash') {
-    e.t -= dt; e.x += Math.cos(e.dashDir) * 13 * dt; e.z += Math.sin(e.dashDir) * 13 * dt; e.face = e.dashDir;
-    if (!e.hitDone && dist(e, p) < 0.5 + def.r * e.scale) { e.hitDone = true; g.hurtPlayer(e.dmg, e); }
-    if (e.t <= 0) { e.state = 'rec'; e.t = 0.8; }
-  } else if (e.state === 'rec') {
-    e.t -= dt; if (e.t <= 0) e.state = 'move';
-  }
-}
+  },
 
-// ---- Bosses: cycle telegraphed attacks; phase 2 under half health ----
-function bossAI(g, e, dt) {
-  const p = g.player, def = e.def, toP = Math.atan2(p.z - e.z, p.x - e.x);
-  if (!e.phase2 && e.hp < e.maxHp * 0.5) {
-    e.phase2 = true; g.banner(`${def.name} enrages!`, 'boss'); g.stage.shake(0.8); sfx('boss');
-    g.fx.ring(e.x, e.z, 8, 0xff4a2a, 0.8);
-    gsap.fromTo(e.mesh.scale, { x: e.scale * 1.25, y: e.scale * 1.25, z: e.scale * 1.25 }, { x: e.scale, y: e.scale, z: e.scale, duration: 0.6 });
-  }
-  const fast = e.phase2 ? 0.7 : 1;
-  if (e.state === 'move') {
-    e.face = toP; hideTele(e);
-    moveToward(g, e, p.x, p.z, def.spd * (e.phase2 ? 1.25 : 1), dt);
-    e.t -= dt;
-    if (e.t <= 0) {
-      e.atk = def.attacks[e.atkIdx++ % def.attacks.length];
-      e.state = 'wind'; e.tmax = e.t = (e.atk === 'summon' ? 1.1 : 1.0) * fast; e.lock = { x: p.x, z: p.z, a: toP };
-      sfx('warn');
-    }
-  } else if (e.state === 'wind') {
-    e.t -= dt; const prog = 1 - e.t / e.tmax;
-    if (e.atk === 'slam') { setTele(e, 'circle', 0xff3a1a); showTelegraph(e.tele, e.lock.x, e.lock.z, 3.8, 0, 0, prog); e.face = Math.atan2(e.lock.z - e.z, e.lock.x - e.x); }
-    else if (e.atk === 'burst' || e.atk === 'summon') { setTele(e, 'circle', e.atk === 'burst' ? 0xff9a1a : 0x9a4aff); showTelegraph(e.tele, e.x, e.z, 3.2, 0, 0, prog); }
-    else if (e.atk === 'charge') { setTele(e, 'line', 0xff2a1a); e.face = e.lock.a; showTelegraph(e.tele, e.x, e.z, 2.6, 15, e.lock.a, prog); }
-    e.lift = prog * 0.4;
-    if (e.t <= 0) {
-      hideTele(e);
-      switch (e.atk) {
-        case 'slam':
-          g.fx.ring(e.lock.x, e.lock.z, 3.8, 0xff7a2a, 0.4); g.fx.burst(e.lock.x, 0.5, e.lock.z, 0xffa040, 18, 7, 0.7); g.stage.shake(0.6);
-          hit(g, e, e.lock.x, e.lock.z, 3.8, e.dmg * 1.4);
-          if (e.phase2 && e.slams !== 1) { e.slams = 1; e.state = 'wind'; e.tmax = e.t = 0.7; e.lock = { x: p.x, z: p.z, a: toP }; return; }
-          e.slams = 0; e.state = 'rec'; e.t = 0.9 * fast; break;
-        case 'burst': {
-          const n = e.phase2 ? 22 : 14, off = Math.random();
-          for (let k = 0; k < n; k++) spawnProjectile(g, 'enemy', e.x, e.z, off + (k / n) * Math.PI * 2, { speed: 6.5, dmg: e.dmg * 0.7, color: 0xffa040, life: 4, y: 1.4, size: 0.3 });
-          sfx('ability'); g.stage.shake(0.3); e.state = 'rec'; e.t = 1.0 * fast; break;
+  // aimed shots, volleys, rings: archers, cultists, wraiths, imps and the stationary turrets share one routine
+  caster(G, bus, e, dt) {
+    const def = e.def;
+    const d = distPlayer(G, e);
+    e.cd -= dt;
+    if (e.state === 'chase') {
+      kite(G, e, dt);
+      if (def.summon) {
+        e.summonCd -= dt;
+        if (e.summonCd <= 0 && G.enemies.length + G.pendingSpawns.length < 9 && d < 14) {
+          e.summonCd = def.summonEvery;
+          const a = Math.random() * TAU;
+          G.pendingSpawns.push({ kind: def.summon, x: e.x + Math.cos(a) * 1.5, z: e.z + Math.sin(a) * 1.5, delay: 0.3 });
+          bus.emit('summon', e);
         }
-        case 'summon': {
-          const n = e.phase2 ? 4 : 3;
-          for (let k = 0; k < n; k++) { const a = (k / n) * Math.PI * 2; spawnEnemy(g, def.minion, e.x + Math.cos(a) * 3.5, e.z + Math.sin(a) * 3.5, { hpMul: 0.7 }); }
-          sfx('ability'); e.state = 'rec'; e.t = 1.0 * fast; break;
+      }
+      if (e.cd <= 0 && d < def.range + 2 && !G.player.dead) {
+        setState(e, 'windup', def.windup);
+        e.lock = toPlayer(G, e);
+        e.tele = def.pattern === 'ring8' ? { type: 'circle', x: e.x, z: e.z, r: 2.4, t: 0 }
+          : def.pattern === 'fan3' || def.pattern === 'spread5' ? { type: 'cone', ang: e.lock, arc: def.pattern === 'fan3' ? 0.75 : 1.2, len: def.range + 1, t: 0 }
+            : { type: 'line', ang: e.lock, len: def.range + 4, width: 0.55, t: 0 };
+        bus.emit('telegraph', e);
+      }
+    } else if (e.state === 'windup') {
+      e.st += dt;
+      e.face = e.lock;
+      e.tele.t = e.st / e.dur;
+      if (e.st >= e.dur) {
+        fire(G, bus, e, e.lock);
+        e.tele = null;
+        setState(e, 'recover', def.recover);
+      }
+    } else if (e.state === 'recover') {
+      e.st += dt;
+      if (e.st >= e.dur) {
+        e.cd = def.cooldown;
+        if (def.blink && Math.random() < 0.6) { setState(e, 'blink', 0.45); e.hidden = true; bus.emit('blinkOut', e); } else setState(e, 'chase');
+      }
+    } else if (e.state === 'blink') {
+      e.st += dt;
+      if (e.st >= e.dur) {
+        for (let i = 0; i < 12; i++) {
+          const a = Math.random() * TAU;
+          const r = 5 + Math.random() * 3;
+          const x = G.player.x + Math.cos(a) * r;
+          const z = G.player.z + Math.sin(a) * r;
+          if (!blockedAt(G.room, x, z, e.r)) { e.x = x; e.z = z; break; }
         }
-        case 'charge': e.state = 'dash'; e.t = 0.75; e.hitDone = false; e.dashDir = e.lock.a; sfx('ability'); break;
+        e.hidden = false;
+        bus.emit('blinkIn', e);
+        setState(e, 'chase');
       }
     }
-  } else if (e.state === 'dash') {
-    e.t -= dt; e.x += Math.cos(e.dashDir) * 19 * dt; e.z += Math.sin(e.dashDir) * 19 * dt;
-    if (!e.hitDone && dist(e, p) < 0.5 + def.r * 0.7) { e.hitDone = true; g.hurtPlayer(e.dmg * 1.3, e); }
-    g.fx.burst(e.x, 0.3, e.z, def.color, 1, 2, 0.3);
-    if (e.t <= 0) { e.state = 'rec'; e.t = 1.1 * fast; }
-  } else if (e.state === 'rec') {
-    e.t -= dt; e.lift = 0;
-    if (e.t <= 0) { e.state = 'move'; e.t = rand(0.8, 1.6) * fast; }
+  },
+
+  flutter(G, bus, e, dt) {
+    const def = e.def;
+    const d = distPlayer(G, e);
+    e.cd -= dt;
+    e.wob += dt * 5;
+    e.y = 1.5 + Math.sin(e.wob) * 0.18;
+    if (e.state === 'chase') {
+      const a = toPlayer(G, e);
+      e.face = turnToward(e.face, a, 7 * dt);
+      walk(G, e, a + Math.sin(e.wob * 0.6) * 0.9, def.speed, dt);
+      if (d < 7.5 && e.cd <= 0 && !G.player.dead) {
+        setState(e, 'windup', def.windup);
+        e.lock = toPlayer(G, e);
+        e.tele = { type: 'line', ang: e.lock, len: Math.min(d + 3, 11), width: 0.7, t: 0 };
+        bus.emit('telegraph', e);
+      }
+    } else if (e.state === 'windup') {
+      e.st += dt;
+      e.face = e.lock;
+      e.tele.t = e.st / e.dur;
+      if (e.st >= e.dur) { e.tele = null; setState(e, 'dive', def.diveTime); e.hit = false; bus.emit('enemyStrike', e); }
+    } else if (e.state === 'dive') {
+      e.st += dt;
+      walk(G, e, e.lock, def.diveSpeed, dt);
+      if (!e.hit && d < e.r + G.player.r + 0.25) { e.hit = true; hurtPlayer(G, bus, e.damage, e.lock, 5, e); }
+      if (e.st >= e.dur) { setState(e, 'recover', def.recover); e.cd = def.cooldown; }
+    } else if (e.state === 'recover') {
+      e.st += dt;
+      walk(G, e, toPlayer(G, e) + Math.PI, def.speed * 0.8, dt);
+      if (e.st >= e.dur) setState(e, 'chase');
+    }
+  },
+
+
+  // slimes squash, then hop to where you stood and burst on landing
+  hop(G, bus, e, dt) {
+    const def = e.def;
+    const d = distPlayer(G, e);
+    e.cd -= dt;
+    if (e.state === 'chase') {
+      e.face = turnToward(e.face, toPlayer(G, e), 6 * dt);
+      e.vx = e.vz = 0;
+      if (e.cd <= 0 && !G.player.dead) {
+        setState(e, 'windup', def.windup);
+        const a = toPlayer(G, e);
+        const len = Math.min(d, def.hopRange);
+        e.land = { x: e.x + Math.cos(a) * len, z: e.z + Math.sin(a) * len };
+        if (blockedAt(G.room, e.land.x, e.land.z, e.r)) e.land = { x: e.x, z: e.z };
+        e.from = { x: e.x, z: e.z };
+        e.tele = { type: 'circle', x: e.land.x, z: e.land.z, r: def.blast, t: 0 };
+        bus.emit('telegraph', e);
+      }
+    } else if (e.state === 'windup') {
+      e.st += dt;
+      e.tele.t = e.st / e.dur;
+      if (e.st >= e.dur) { setState(e, 'hop', def.hopTime); bus.emit('enemyStrike', e); }
+    } else if (e.state === 'hop') {
+      e.st += dt;
+      const k = clamp(e.st / e.dur, 0, 1);
+      e.x = e.from.x + (e.land.x - e.from.x) * k;
+      e.z = e.from.z + (e.land.z - e.from.z) * k;
+      e.y = Math.sin(k * Math.PI) * (def.small ? 1.1 : 1.6);
+      if (k >= 1) {
+        e.y = 0;
+        if (Math.hypot(G.player.x - e.land.x, G.player.z - e.land.z) < def.blast + G.player.r) hurtPlayer(G, bus, e.damage, angleTo(e.x, e.z, G.player.x, G.player.z), 5);
+        bus.emit('slimeLand', e);
+        e.tele = null;
+        setState(e, 'recover', def.recover);
+      }
+    } else if (e.state === 'recover') {
+      e.st += dt;
+      if (e.st >= e.dur) { setState(e, 'chase'); e.cd = def.cooldown; }
+    }
+  },
+
+  // a ground pounce: spiders and wolves crouch (the line shows where) and then spring
+  lunge(G, bus, e, dt) {
+    const def = e.def;
+    const d = distPlayer(G, e);
+    e.cd -= dt;
+    if (e.state === 'chase') {
+      const a = toPlayer(G, e);
+      e.face = turnToward(e.face, a, 7 * dt);
+      walk(G, e, a + Math.sin((e.wob += dt * 2)) * 0.5, def.speed, dt);
+      if (d < def.lungeRange && e.cd <= 0 && !G.player.dead) {
+        setState(e, 'windup', def.windup);
+        e.lock = toPlayer(G, e);
+        e.tele = { type: 'line', ang: e.lock, len: Math.min(d + 2, def.lungeRange + 1), width: 0.8, t: 0 };
+        bus.emit('telegraph', e);
+      }
+    } else if (e.state === 'windup') {
+      e.st += dt;
+      e.face = e.lock;
+      e.vx = e.vz = 0;
+      e.tele.t = e.st / e.dur;
+      if (e.st >= e.dur) { e.tele = null; setState(e, 'lunge', def.lungeTime); e.hit = false; bus.emit('enemyStrike', e); }
+    } else if (e.state === 'lunge') {
+      e.st += dt;
+      walk(G, e, e.lock, def.lungeSpeed, dt);
+      if (!e.hit && d < e.r + G.player.r + 0.2) { e.hit = true; hurtPlayer(G, bus, e.damage, e.lock, 5, e); }
+      if (e.st >= e.dur) { setState(e, 'recover', def.recover); e.cd = def.cooldown; }
+    } else if (e.state === 'recover') {
+      e.st += dt;
+      e.vx = e.vz = 0;
+      if (e.st >= e.dur) setState(e, 'chase');
+    }
+  },
+
+  // beetles: a long telegraphed run that ends in a stun if they hit stone
+  charger(G, bus, e, dt) {
+    const def = e.def;
+    const d = distPlayer(G, e);
+    e.cd -= dt;
+    if (e.state === 'chase') {
+      const a = toPlayer(G, e);
+      e.face = turnToward(e.face, a, 3 * dt);
+      walk(G, e, e.face, def.speed, dt);
+      if (d < 10 && e.cd <= 0 && !G.player.dead) {
+        setState(e, 'windup', def.windup);
+        e.lock = toPlayer(G, e);
+        e.tele = { type: 'line', ang: e.lock, len: 12, width: 1.3, t: 0 };
+        bus.emit('telegraph', e);
+      }
+    } else if (e.state === 'windup') {
+      e.st += dt;
+      e.face = e.lock;
+      e.vx = e.vz = 0;
+      e.tele.t = e.st / e.dur;
+      if (e.st >= e.dur) { e.tele = null; setState(e, 'charge', def.chargeTime); e.hit = false; bus.emit('enemyStrike', e); }
+    } else if (e.state === 'charge') {
+      e.st += dt;
+      const bx = e.x;
+      const bz = e.z;
+      walk(G, e, e.lock, def.chargeSpeed, dt);
+      if (!e.hit && d < e.r + G.player.r + 0.3) { e.hit = true; hurtPlayer(G, bus, e.damage, e.lock, 9, e); }
+      if (Math.hypot(e.x - bx, e.z - bz) < def.chargeSpeed * dt * 0.4) {
+        e.stun = def.stunAfter;
+        e.cd = def.cooldown;
+        bus.emit('crash', e);
+        setState(e, 'chase');
+      } else if (e.st >= e.dur) { setState(e, 'recover', def.recover); e.cd = def.cooldown; }
+    } else if (e.state === 'recover') {
+      e.st += dt;
+      e.vx = e.vz = 0;
+      if (e.st >= e.dur) setState(e, 'chase');
+    }
+  },
+
+  // yetis and golems: a heavy blow on the floor in front of them
+  slam(G, bus, e, dt) {
+    const def = e.def;
+    const d = distPlayer(G, e);
+    e.cd -= dt;
+    if (e.state === 'chase') {
+      e.face = turnToward(e.face, toPlayer(G, e), 4 * dt);
+      if (d > def.slamReach + def.slamRadius * 0.7) walk(G, e, e.face, def.speed, dt); else e.vx = e.vz = 0;
+      if (d < def.slamReach + def.slamRadius + 0.6 && e.cd <= 0 && !G.player.dead) {
+        setState(e, 'windup', def.windup);
+        e.lock = toPlayer(G, e);
+        e.slamAt = { x: e.x + Math.cos(e.lock) * def.slamReach, z: e.z + Math.sin(e.lock) * def.slamReach };
+        e.tele = { type: 'circle', x: e.slamAt.x, z: e.slamAt.z, r: def.slamRadius, t: 0 };
+        bus.emit('telegraph', e);
+      }
+    } else if (e.state === 'windup') {
+      e.st += dt;
+      e.face = e.lock;
+      e.vx = e.vz = 0;
+      e.tele.t = e.st / e.dur;
+      if (e.st >= e.dur) {
+        const p = G.player;
+        if (Math.hypot(p.x - e.slamAt.x, p.z - e.slamAt.z) < def.slamRadius + p.r) hurtPlayer(G, bus, e.damage, angleTo(e.slamAt.x, e.slamAt.z, p.x, p.z), 9, e);
+        bus.emit('slam', { x: e.slamAt.x, z: e.slamAt.z, r: def.slamRadius, enemy: e });
+        e.tele = null;
+        setState(e, 'recover', def.recover);
+      }
+    } else if (e.state === 'recover') {
+      e.st += dt;
+      if (e.st >= e.dur) { setState(e, 'chase'); e.cd = def.cooldown; }
+    }
+  },
+
+  // goblins and imps throw bombs that land, and go off, where you were
+  lobber(G, bus, e, dt) {
+    const def = e.def;
+    const d = distPlayer(G, e);
+    e.cd -= dt;
+    if (e.state === 'chase') {
+      kite(G, e, dt);
+      if (e.cd <= 0 && d < def.range + 2 && !G.player.dead) { setState(e, 'windup', def.windup); e.lock = toPlayer(G, e); bus.emit('telegraph', e); }
+    } else if (e.state === 'windup') {
+      e.st += dt;
+      e.face = e.lock;
+      e.vx = e.vz = 0;
+      if (e.st >= e.dur) {
+        const p = G.player;
+        const room = G.room;
+        const x = clamp(p.x + p.vx * 0.35, -room.w / 2 + 1, room.w / 2 - 1);
+        const z = clamp(p.z + p.vz * 0.35, -room.d / 2 + 1, room.d / 2 - 1);
+        addBlast(G, bus, { x, z, r: def.blast, delay: def.fuse, damage: e.damage, kind: def.id === 'snowimp' ? 'frost' : 'blast', lobFrom: { x: e.x, z: e.z } });
+        bus.emit('lob', e);
+        setState(e, 'recover', def.recover);
+      }
+    } else if (e.state === 'recover') {
+      e.st += dt;
+      if (e.st >= e.dur) { setState(e, 'chase'); e.cd = def.cooldown; }
+    }
+  },
+
+  // a bloat drifts up and bursts into spores
+  bloat(G, bus, e, dt) {
+    const def = e.def;
+    const d = distPlayer(G, e);
+    e.wob += dt * 3;
+    e.y = 1.4 + Math.sin(e.wob) * 0.2;
+    if (e.state === 'chase') {
+      const a = toPlayer(G, e);
+      e.face = turnToward(e.face, a, 3 * dt);
+      walk(G, e, a, def.speed, dt);
+      if (d < 3 && !G.player.dead) { setState(e, 'windup', def.windup); e.tele = { type: 'circle', x: e.x, z: e.z, r: def.blast, t: 0 }; bus.emit('telegraph', e); }
+    } else if (e.state === 'windup') {
+      e.st += dt;
+      e.tele.x = e.x;
+      e.tele.z = e.z;
+      e.tele.t = e.st / e.dur;
+      e.vx = e.vz = 0;
+      if (e.st >= e.dur) {
+        addBlast(G, bus, { x: e.x, z: e.z, r: def.blast, delay: 0, damage: e.damage, kind: 'spore', hurtsEnemies: true });
+        e.suicide = true;
+        e.tele = null;
+        damageEnemy(G, bus, e, 1e9, { ang: 0 });
+      }
+    }
+  },
+};
+AI.boss = bossAI;
+AI.breather = AI.melee;
+AI.turret = AI.caster;
+export const BEHAVIOURS = Object.keys(AI);
+
+export function updateEnemies(G, bus, dt) {
+  for (const e of G.enemies) {
+    if (e.dead) continue;
+    e.hitFlash = Math.max(0, e.hitFlash - dt);
+    if (e.chill > 0) e.chill -= dt;
+    if (e.frozen > 0) e.frozen -= dt;
+    if (e.burn) {
+      e.burn.t -= dt;
+      e.burn.tick -= dt;
+      if (e.burn.tick <= 0) { e.burn.tick = 0.5; damageEnemy(G, bus, e, 3, { burnTick: true }); if (e.dead) continue; }
+      if (e.burn.t <= 0) e.burn = null;
+    }
+    if (!e.def.stationary) applyKnockback(G.room, e, dt);
+    if (e.state === 'spawn') {
+      e.st += dt;
+      if (e.st >= e.spawnDur) setState(e, 'chase');
+      continue;
+    }
+    if (e.stun > 0) {
+      e.stun -= dt;
+      e.tele = null;
+      if (e.state !== 'chase' && e.state !== 'hop') setState(e, 'chase');
+      e.vx = e.vz = 0;
+      continue;
+    }
+    AI[e.def.ai](G, bus, e, dt);
   }
-  if (e.state === 'move') e.lift = 0;
-  resolveBounds(g, e, 1.4);
-  // Contact damage
-  if (dist(e, p) < def.r * 0.9 + 0.4 && (e.contact = (e.contact || 0) - dt) <= 0) { e.contact = 0.8; g.hurtPlayer(e.dmg * 0.6, e); }
+  separate(G);
+  G.enemies = G.enemies.filter((e) => !e.dead);
 }
+
+function separate(G) {
+  const list = G.enemies;
+  for (let i = 0; i < list.length; i++) {
+    const a = list[i];
+    if (a.dead || a.state === 'spawn' || a.state === 'hop' || a.ghost) continue;
+    for (let j = i + 1; j < list.length; j++) {
+      const b = list[j];
+      if (b.dead || b.state === 'spawn' || b.state === 'hop' || b.ghost) continue;
+      const dx = b.x - a.x;
+      const dz = b.z - a.z;
+      const min = a.r + b.r;
+      const d2 = dx * dx + dz * dz;
+      if (d2 >= min * min || d2 === 0) continue;
+      const d = Math.sqrt(d2);
+      const push = (min - d) / 2;
+      const wa = a.def.stationary ? 0 : b.def.stationary ? 2 : 1;
+      const wb = b.def.stationary ? 0 : a.def.stationary ? 2 : 1;
+      moveEntity(G.room, a, (-dx / d) * push * wa, (-dz / d) * push * wa);
+      moveEntity(G.room, b, (dx / d) * push * wb, (dz / d) * push * wb);
+    }
+  }
+}
+
+export { angDiff };
