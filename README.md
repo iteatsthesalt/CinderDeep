@@ -1,5 +1,7 @@
 # CinderDeep
 
+> **Looking for the Cinderdeep 3D game?** It is not here. See [CANONICAL.md](CANONICAL.md).
+
 A collection of 132 public upstream Git repositories, organized by owner and pinned to exact commits. Inventory collected October 25, 2026 (America/New_York); machine-readable retrieval timestamps use UTC.
 
 | Directory | Sources |

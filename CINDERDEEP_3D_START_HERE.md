@@ -1,16 +1,12 @@
 # Start here: CinderDeep 3D
 
-This repository also contains a large catalog of unrelated upstream projects. The game workspace is isolated here:
+**Stop. The game is not in this repository.** Read [CANONICAL.md](CANONICAL.md).
 
-- Workspace to open in your local AI: projects/cinderdeep-3d/
-- Read first: projects/cinderdeep-3d/AGENTS.md
-- Game design source of truth: projects/cinderdeep-3d/GAMEPLAY_SPEC.md\n- Complete unique-systems catalog: projects/cinderdeep-3d/SYSTEMS_CATALOG.md
-- Step-by-step prompts: projects/cinderdeep-3d/LOCAL_AI_GUIDE.md
+The one real game is `Games/Cinderdeep3D` on branch `ccr-c44de517-hmls4q` of
+https://github.com/iteatsthesalt/Game-Dev-Resources. Continue it. Do not build a new game here.
 
-The game is being rebuilt from a clean codebase. The folder contains the game brief and a small npm manifest for Three.js, GSAP, and Vite. It contains no old Cinderdeep game source or assets. Do not initialize or edit the upstream catalog submodules.
-
-Paste this into your local AI after opening projects/cinderdeep-3d as its workspace:
+Paste this into any AI (Claude, ChatGPT, Goose, or a local model):
 
 ~~~text
-Read AGENTS.md, GAMEPLAY_SPEC.md, SYSTEMS_CATALOG.md, and LOCAL_AI_GUIDE.md completely. Create CinderDeep as a fresh 3D browser game from an empty source tree in this workspace, following the specification and systems catalog. Do not stop after giving me a plan: implement the game in small working stages, use Three.js for the actual 3D world and GSAP in visible gameplay/UI animation, run the build and fix errors, and keep working until the acceptance checklist in AGENTS.md is met. Do not copy old game source or assets from elsewhere in the repository.
+Work only on the existing Cinderdeep 3D game: repository iteatsthesalt/Game-Dev-Resources, branch ccr-c44de517-hmls4q, folder Games/Cinderdeep3D. Fetch and merge that branch first, read Games/Cinderdeep3D/README.md and 3D-PLAN.md, then continue the next unticked plan item. Never start a new game, never rebuild from scratch, never copy the game anywhere else, and push only to that branch.
 ~~~
