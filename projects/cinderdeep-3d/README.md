@@ -4,6 +4,9 @@ The active development line is main. Continue the existing game in this director
 do not follow historical fresh-build prompts or resume retired prototype branches.
 Read ../../ACTIVE_VERSION.json, ../../VERSION_HISTORY.md and AGENTS.md first.
 
+Codex's world-development assignment and progress are tracked in
+[WORLD_BUILD_README.md](WORLD_BUILD_README.md).
+
 Use Node 24 and Python 3. From the repository root run
 `python3 tools/check_active_version.py`. Here, run `npm ci`, `npm run dev`, and
 `npm run build`. The game uses Three.js, GSAP and Vite. It does not need the
