@@ -22,6 +22,15 @@ def check(root):
             capture_output=True)
         if ancestor.returncode:
             raise ValueError('HEAD does not contain the active baseline (or history is too shallow). Fetch main before migrating; do not reset local work.')
+        remote_marker = subprocess.run(
+            ['git', '-C', str(root), 'cat-file', '-e', 'refs/remotes/origin/main:ACTIVE_VERSION.json'],
+            capture_output=True)
+        if remote_marker.returncode == 0:
+            current = subprocess.run(
+                ['git', '-C', str(root), 'merge-base', '--is-ancestor', 'refs/remotes/origin/main', 'HEAD'],
+                capture_output=True)
+            if current.returncode:
+                raise ValueError('This checkout is behind or diverges from fetched main. Preserve local work and integrate current main before continuing.')
         workspace = root / manifest['workspace']
         if not (workspace / 'src/main.js').is_file() or not (workspace / 'package-lock.json').is_file():
             raise ValueError('The active game source or frozen dependency lock is missing.')

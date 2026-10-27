@@ -65,6 +65,18 @@ class ActiveVersionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'source or frozen'):
             check(self.root)
 
+    def test_older_checkout_is_rejected_after_main_advances(self):
+        self.git('add', '.')
+        self.git('commit', '-qm', 'active marker')
+        previous = self.git('rev-parse', 'HEAD')
+        (self.root / 'fix').write_text('new main correction')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'main advances')
+        self.git('update-ref', 'refs/remotes/origin/main', self.git('rev-parse', 'HEAD'))
+        self.git('switch', '--detach', previous)
+        with self.assertRaisesRegex(ValueError, 'behind or diverges'):
+            check(self.root)
+
     def test_persistent_hooks_block_retired_push_and_old_checkout(self):
         subprocess.run([sys.executable, str(Path(__file__).with_name('install_version_hooks.py')),
                         '--root', str(self.root)], check=True, capture_output=True)
