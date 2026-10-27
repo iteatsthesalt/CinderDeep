@@ -8,7 +8,7 @@ The source accumulated features over many versions. The final CDC-V8 layer expli
 
 Some older systems remain useful content: hidden DMT rooms, souls at risk, Chaos Beasts, chaos shrines, omens, feats, world biomes, weapon evolution, and the Realm. Keep their identity while fitting rewards into the current three-circle model. Do not restore a superseded progression system as a competing permanent tree. The notes below label the intended integration when versions conflict.
 
-The supplied HTML is reference material for design extraction only. The target directory starts with no game implementation. Create all runtime code, models, animations, UI and saves anew. Do not edit or import the earlier CinderDeep HTML or earlier 3D output.
+The supplied HTML is reference material for design extraction only. The target directory now contains the active game implementation. Continue its runtime code, models, animations, UI and saves. Historical clean-build directions are superseded by LOCAL_AI_GUIDE.md. Review archived material before porting individual improvements.
 
 ## 2. Game shape and complete player loops
 
@@ -323,12 +323,12 @@ The rebuild is a full 3D game. Translate the old compact top-down composition in
 - Use region palettes, fog, emissive materials, baked/procedural trim and particles. Scale effects to screen-space so smoke, bloom or camera shake never hide attack tells.
 - Use GSAP for finite cinematic and UI animation: title/hero reveals, boss intros, room/floor transitions, level-up cards, damage feedback, camera easing and pickups. Use quickTo/timelines for retargeted values; kill animations when actors/scenes are disposed. Game simulation and physics remain in the game loop.
 - DOM/CSS may render menus and the HUD above the Three.js canvas. Keep UI layout responsive, keyboard accessible and separate from world state.
-- Use procedural original materials and geometry until original 3D assets are commissioned. Keep asset provenance in the repo. No old game source or artwork should enter the new workspace.
+- Preserve existing materials, geometry and commissioned assets. Keep asset provenance in the repo and review historical artwork before importing it.
 - Use Vite/npm imports for Three.js and GSAP. Commit package.json and package-lock.json after install, never node_modules/dist. Do not load packages from a CDN or duplicate library files.
 
-## 13. Fresh-build order
+## 13. Historical milestone order
 
-This is a sequence for creating a new implementation, not extending a prototype:
+This sequence records the original implementation plan. Continue the existing game; do not repeat its empty-source steps.
 
 1. Empty-source foundation: Vite entry, Three.js scene, GSAP setup, responsive canvas and module boundaries.
 2. New end-to-end dungeon encounter: a new hero, a real 3D room, input, one weapon, telegraphed enemy, damage/death, reward and exit. This is the first code written in the project.
@@ -339,4 +339,4 @@ This is a sequence for creating a new implementation, not extending a prototype:
 7. Optional Realm and multiplayer presence.
 8. Final 3D art, sound, controls, performance, accessibility and content audit.
 
-At every stage, continue using only the new code and assets made in this folder. The old prototype is never the starting point.
+At every stage, preserve current code and assets. Compare archived versions deliberately and keep asset provenance.

@@ -1,16 +1,23 @@
-# Start here: CinderDeep 3D
+# Start here: continue the current CinderDeep game
 
-This repository also contains a large catalog of unrelated upstream projects. The game workspace is isolated here:
+Use branch `main` and directory `projects/cinderdeep-3d/`. The game already exists.
+Do not rebuild it from an empty tree or work on archived prototype branches.
 
-- Workspace to open in your local AI: projects/cinderdeep-3d/
-- Read first: projects/cinderdeep-3d/AGENTS.md
-- Game design source of truth: projects/cinderdeep-3d/GAMEPLAY_SPEC.md\n- Complete unique-systems catalog: projects/cinderdeep-3d/SYSTEMS_CATALOG.md
-- Step-by-step prompts: projects/cinderdeep-3d/LOCAL_AI_GUIDE.md
+Read `ACTIVE_VERSION.json`, `VERSION_HISTORY.md`, root `AGENTS.md`, and the game's
+`AGENTS.md` before editing. Preserve local work before switching an older checkout.
+Run `python3 tools/check_active_version.py` from the repository root.
 
-The game is being rebuilt from a clean codebase. The folder contains the game brief and a small npm manifest for Three.js, GSAP, and Vite. It contains no old Cinderdeep game source or assets. Do not initialize or edit the upstream catalog submodules.
+```sh
+cd projects/cinderdeep-3d
+npm ci
+npm run dev
+npm run build
+```
 
-Paste this into your local AI after opening projects/cinderdeep-3d as its workspace:
+The active baseline preserves the 19-playable implementation and its room-transition
+fix. Other published versions are preserved in archive tags listed in VERSION_HISTORY.md.
+Their overlapping implementations are reference material, not additional active games.
 
-~~~text
-Read AGENTS.md, GAMEPLAY_SPEC.md, SYSTEMS_CATALOG.md, and LOCAL_AI_GUIDE.md completely. Create CinderDeep as a fresh 3D browser game from an empty source tree in this workspace, following the specification and systems catalog. Do not stop after giving me a plan: implement the game in small working stages, use Three.js for the actual 3D world and GSAP in visible gameplay/UI animation, run the build and fix errors, and keep working until the acceptance checklist in AGENTS.md is met. Do not copy old game source or assets from elsewhere in the repository.
-~~~
+The upstream catalog is unrelated to the game. Do not initialize its submodules.
+Keep existing models and asset provenance. Previously generated external-tool models
+have not been located in this Git history; do not assume they should be regenerated.

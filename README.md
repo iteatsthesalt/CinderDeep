@@ -1,5 +1,7 @@
 # CinderDeep
 
+**Game development: use `main` and [projects/cinderdeep-3d](projects/cinderdeep-3d/README.md).** Continue the existing game; do not start another rebuild. Read [the version register](VERSION_HISTORY.md) and [start here](CINDERDEEP_3D_START_HERE.md). The catalog below is unrelated to game setup.
+
 A collection of 132 public upstream Git repositories, organized by owner and pinned to exact commits. Inventory collected October 25, 2026 (America/New_York); machine-readable retrieval timestamps use UTC.
 
 | Directory | Sources |
@@ -51,6 +53,9 @@ Verification checks that the committed Git tree, `.gitmodules`, and provenance m
 
 Pins are a reproducible snapshot. `git submodule update --init` uses those pins. `git submodule update --remote` intentionally changes the checked-out revisions and should not be used to reproduce this snapshot.
 
-## Fresh 3D game workspace
+## Current 3D game workspace
 
-The standalone CinderDeep 3D game brief and local-AI handoff live in [projects/cinderdeep-3d](projects/cinderdeep-3d/README.md). Start with [CINDERDEEP_3D_START_HERE.md](CINDERDEEP_3D_START_HERE.md), then open projects/cinderdeep-3d as the AI workspace. The game is a fresh implementation; no legacy game HTML or assets are included. Do not initialize the upstream catalog submodules for game work.
+The game is implemented in [projects/cinderdeep-3d](projects/cinderdeep-3d/README.md).
+Use current main and continue its code and models. Historical prototypes and the original
+empty-workspace instructions are archived; see [VERSION_HISTORY.md](VERSION_HISTORY.md).
+Do not initialize the upstream catalog submodules for game work.

@@ -1,6 +1,6 @@
 # CinderDeep 3D — game design specification
 
-This is a self-contained design brief for a clean implementation. Read SYSTEMS_CATALOG.md for the detailed inventory of unique mechanics, progression circles, world content and 3D conversion requirements. The source game is not part of this repository. Rebuild its gameplay and identity in a true 3D presentation; do not port its old code or visual assets.
+This is the product design brief for the existing implementation. Historical instructions to begin from an empty tree are superseded by LOCAL_AI_GUIDE.md; continue current main and preserve existing code and models. Read SYSTEMS_CATALOG.md for the detailed inventory of unique mechanics, progression circles, world content and 3D conversion requirements. Preserve the game's identity in a true 3D presentation and review any historical asset import for provenance.
 
 ## 1. Game identity
 
@@ -155,7 +155,7 @@ Title flow: New Descent, continue living character(s), Shared Talent Atlas, Live
 
 ## 11. Quality bar and first milestone
 
-The first newly written end-to-end playable milestone must be built from an empty source tree (it is not a continuation of any earlier prototype) and contain:
+The initial playable milestone is historical. Continue and verify the existing implementation against these requirements:
 
 - A responsive title screen and one selected hero.
 - One complete, sealed 3D combat room in the Ossuary.

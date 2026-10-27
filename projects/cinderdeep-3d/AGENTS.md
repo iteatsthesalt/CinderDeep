@@ -1,15 +1,15 @@
 # Local AI instructions
 
-You are working on the fresh CinderDeep 3D game inside this folder.
+You are continuing the existing CinderDeep 3D game on the active main development line. Read ../../ACTIVE_VERSION.json and ../../VERSION_HISTORY.md; run python3 ../../tools/check_active_version.py before work.
 
 ## Read before changing files
 
 Read GAMEPLAY_SPEC.md, SYSTEMS_CATALOG.md and LOCAL_AI_GUIDE.md before implementation. GAMEPLAY_SPEC.md is the product contract. If two historical descriptions conflict, use the CDC-V8 rules in its "Current life and progression rules" section.
 
-## Scope and clean start
+## Scope and continuity
 
 - Work only inside projects/cinderdeep-3d. Do not edit the repository's catalog, upstream/, .gitmodules, provenance, or root source catalog as part of game implementation.
-- This is a fresh rebuild from an empty game-code directory. Do not continue, patch, import, scrape, or vendor the old Cinderdeep source, the earlier AI-made 3D output, or any prior prototype/artifact. There are no legacy game files in this workspace.
+- Continue the existing implementation and preserve its models, assets, saves, and working systems. Historical fresh-build prompts are superseded. Archived versions may inform a reviewed port; do not replace this game with another prototype.
 - The root repository contains a catalog of upstream repositories. Do not run git submodule update. You do not need those repositories to build the game.
 - Treat the supplied design brief here as sufficient context. Do not block on access to an old HTML file.
 
@@ -27,9 +27,9 @@ Read GAMEPLAY_SPEC.md, SYSTEMS_CATALOG.md and LOCAL_AI_GUIDE.md before implement
 ## How to work
 
 1. Inspect this folder, read the two project documents, and summarize the implementation steps briefly.
-2. Continue past the summary: implement the project in working increments, starting from empty source files and creating the first new end-to-end dungeon encounter.
+2. Continue from the existing game in working increments. Inspect implemented systems before adding or replacing anything.
 3. After each milestone, run npm run build and launch the dev server or browser when available. Fix issues before adding more content.
-4. Continue through all milestones in LOCAL_AI_GUIDE.md without waiting for the user to paste each prompt. Ask only if a decision truly cannot be inferred from the brief.
+4. Follow the current task and continuation guide. Do not launch a fresh rebuild from historical milestone prompts.
 5. Keep package-lock.json committed once dependencies are installed. Do not commit node_modules or dist.
 6. At completion, report what works, how to run it, the remaining limitations, and the files changed.
 
@@ -41,4 +41,4 @@ Read GAMEPLAY_SPEC.md, SYSTEMS_CATALOG.md and LOCAL_AI_GUIDE.md before implement
 - The game uses Three.js for the world and GSAP for meaningful animation.
 - HUD, title, pause, map/build/progression views, death screen, and settings work and remain readable at desktop and narrow touch sizes.
 - The current one-life and permanent-progression rules are enforced and saved correctly.
-- No legacy Cinderdeep source or assets have been copied into the workspace.
+- Existing source and model work is preserved, and any imported assets have provenance and appropriate usage rights.
