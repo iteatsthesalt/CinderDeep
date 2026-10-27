@@ -1,15 +1,15 @@
 name: Cinderdeep 2D template
 on:
   push:
-    paths: ['cinderdeep-2d-template/**', '.github/workflows/cinderdeep-2d-template.yml']
+    paths: ['projects/cinderdeep-2d-template/**', '.github/workflows/cinderdeep-2d-template.yml']
   pull_request:
-    paths: ['cinderdeep-2d-template/**', '.github/workflows/cinderdeep-2d-template.yml']
+    paths: ['projects/cinderdeep-2d-template/**', '.github/workflows/cinderdeep-2d-template.yml']
 jobs:
   test:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: cinderdeep-2d-template
+        working-directory: projects/cinderdeep-2d-template
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

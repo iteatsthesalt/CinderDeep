@@ -1,0 +1,39 @@
+# Cinderdeep 3D: the road to entirely 3D
+
+**What this is:** Cinderdeep remade in 3D, with the 2D game as the template. The 2D game says what every thing is and does; the simulation (rules, brains, saves) carries over; everything that is drawn is rebuilt in 3D, mostly as the sprite rig's models (`../sprite-rig/src/kit/`), and **the 2D code it replaces is deleted in the same step**. When the list is done, no 2D painter, sprite sheet, card or canvas is left drawing the world.
+
+The hourly upgrade works down this list, one item (or a well-scoped part of one) per run, and ticks it off with a one-line note. While anything is unticked, runs only convert; once everything is ticked, they turn to new upgrades and creations for the 3D game.
+
+Rules for every step: the simulation, saves and gameplay stay the same; `npm test` passes, including the soak test's frame budget; nothing is drawn twice, and nothing replaced is kept "for its shadow" or "as a fallback": **a step deletes the 2D code it replaces, and is not ticked while that code remains** (see the ledger at the end).
+
+## Ledger: 2D still drawing the world, and the step that deletes it
+
+- **Monsters:** their sprites and painters (`06-monster-sprites.js`, monster parts of `19-art-bosses-props.js` and `43-rigged-world.js`, the frame recolouring in `44-elemental-creatures.js`) and their cards. Deleted by *Monsters become solid*, as the rig kit's models (the tool's *Rigs for the game's monsters*).
+- **Heroes and beasts not yet models:** heroes on a mount or from a custom sheet, beetle, plant and shade beasts: the hero and beast painters (hero parts of `04-sprites.js`, `17-beasts.js`, `31-evolved-bodies.js`, `32-turning-heroes.js`, `drawPlayer`, `drawMount`, hero parts of `43-rigged-world.js`) and the hero card. Deleted by *Heroes and beasts become solid*.
+- **Props, loot and Realm things built from pixel art:** voxel solids made from their sprites, and the cards still painted for their shadows. Deleted when each kind becomes a rig model with its own shadow, as heroes, beasts, chests and trees already are.
+- **Floors and walls:** painted tile textures and boxes. Deleted by *Walls and floors gain relief*.
+- **Floor painting:** telegraphs, rings, fields and the shadow ellipses laid on the floor canvas. Deleted by *Floor-layer effects become 3D*.
+- **Missiles, particles, numbers, bars, names, weather:** cards, sprites and the flat screen canvas. Each deleted by its own step below.
+- **The card system itself** (`v3Card`, card shadows, card canvases): deleted with the last thing that stands on a card.
+
+Already gone: the cards behind heroes, playable hounds, foxes and golems, chests and Realm trees (their models throw their own shadows), and the sprite they were sized by (10.4).
+
+## The play view
+
+- [x] **Realm still objects become solid.** Trees, rocks, bushes, buildings, towers, wells, lamps, graves, statues, stalls, fences, menhirs and marks are built once from their pixel art into voxel models: the silhouette extruded, rounder toward the middle in stepped layers, each pixel's colour kept, lit by the scene's lights with hot colours still glowing at night. Models are shared by every object with the same picture. *(Version 9.3: `v3Solid` in 59-renderer-3d.js. Version 10.2: oaks, birches, pines, willows, palms and blossoms are the 8-Way Sprite Rig's trees at their real height, coloured from their own sprites, merged into one mesh each.)*
+- [x] **Dungeon props become solid.** Pots, crates, barrels, chests, altars, braziers and shrines get voxel models; animated parts (flames, glows) stay as light and effects around the model. *(Version 10.1: chests are the 8-Way Sprite Rig's chest model, at their real size, lid swinging as they open. Version 9.4: `v3PropCard` builds each prop's sprite into a shared solid, swaying banners and mushrooms and opening chest lids switch models frame by frame, and only flames, sparkles, drips and the altar rune stay on a card. The merchant and forge-keeper wait for the heroes' step.)*
+- [x] **Loot and pickups become solid.** Weapons, relics, potions, gold, souls and keys on the floor as small spinning voxel models. *(Version 9.7: `v3LootCards` builds each item's icon and each pickup's sprite into a solid that floats and turns over its glow; the glow, rarity ring and shop price stay on the floor card.)*
+- [ ] **Monsters become solid.** Each monster's frames built into voxel models, cached per frame, so walking, attacking and dying animate in 3D; bosses first, then the rest. Elemental and chaos looks tint the model.
+- [ ] **Heroes and beasts become solid.** The hero's rigged frames as voxel models per facing and frame, with the held weapon its own model in the hand; mounts and evolved forms too. Other players and townsfolk in the Realm likewise. *(Version 10.0, heroes: they stand as the 8-Way Sprite Rig's own 3D models (`59-rig-models.js`, the tool's `src/kit/` built in), dressed for their class, holding their weapon as a model, posed by what they do and turned to their aim. Version 10.3: playable hounds and foxes are the rig's beast, golems its heavy figure, in their form's colours and as tall as their sprites. Still to come: beetle, plant and shade beasts, mounts, custom sheets, evolved looks, other players and townsfolk.)*
+- [ ] **Walls and floors gain relief.** Wall tops, pillars, doorframes and stairs as real geometry instead of painted boxes and pictures; floor tiles with slight height (cobbles, rubble, roots), lava and toxic pools sunk below the floor with moving surfaces.
+- [ ] **Floor-layer effects become 3D.** Telegraphs, rings, runes, slashes and fields as shaped meshes and decals that follow the floor, instead of painted canvases laid over it.
+- [ ] **Missiles become solid.** Arrows, bolts, knives, fireballs and orbs as small models or glowing meshes with trails, instead of cards.
+- [ ] **Particles become solid.** Blood, grit, embers and soot as tiny instanced cubes with physics already in the game.
+- [ ] **Damage numbers, health bars, names and speech move into the scene.** Floating 3D text and bars above heads that the camera sees in depth, instead of the flat screen canvas.
+- [ ] **Weather in 3D.** Rain, snow, ash and spores falling through the scene volume.
+
+## The screens
+
+- [x] **The Talent Tree in 3D.** The mycelium circle as a 3D network the camera can orbit: hyphae as tubes with light running along them, nodes as fruiting bodies, the chaos heart as a pulsing core. *(Cloud session: a mound with the heart at its crown, voxel gems on stems, hero cards on pedestals, ribbons of hyphae with beads of light, orbit by right-drag or the turn and tilt buttons; `circle3d` in 59-circles-3d.js is the shared helper; the 2D painter is deleted.)*
+- [x] **The Skill Tree and DNA circle in 3D.** The skill wheel as a 3D star of paths; DNA as a turning double helix with genes along its strands. *(Cloud session: `skillCircle`/`renderSkill` and `dnaCircle`/`renderDna` in 59-screens-3d.js on the shared `circle3d`; arms climb to their hearts, three strands each a double helix of light; drag turns, wheel zooms; the 2D painters in 49-skill-trees.js and 54-dna.js are deleted.)*
+- [x] **Hero select, camp and title in 3D.** Heroes and beasts shown as their voxel models on a turning stage; the camp as a small 3D scene. *(Cloud session: `stage3d` in 59-stage-3d.js stands the rig's model on a turning platform; hero select's detail panel is a live stage, and `classPortrait`/`formPortrait` are stills of it everywhere (grid, camp, evolution strips); `camp3d` in 59-camp-3d.js is a campfire diorama with the party round it, the camp screen's banner and the title's backdrop. The beetle, plant and shade beasts still show sprites until the rig has them, as `formPortrait`'s fallback and on the hero stage; delete that fallback with their models.)*

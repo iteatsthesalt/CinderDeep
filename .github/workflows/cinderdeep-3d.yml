@@ -1,20 +1,21 @@
-name: Cinderdeep 3D
+name: cinderdeep-3d
 on:
   push:
-    paths: ['cinderdeep-3d/**', '.github/workflows/cinderdeep-3d.yml']
+    branches: [main]
+    paths: ['projects/cinderdeep-3d/**', 'projects/sprite-rig/**', '.github/workflows/cinderdeep-3d.yml']
   pull_request:
-    paths: ['cinderdeep-3d/**', '.github/workflows/cinderdeep-3d.yml']
+    paths: ['projects/cinderdeep-3d/**', 'projects/sprite-rig/**', '.github/workflows/cinderdeep-3d.yml']
 jobs:
   test:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: cinderdeep-3d
+        working-directory: projects/cinderdeep-3d
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install --no-audit --no-fund
+      - run: npm ci --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
       - run: npm test
