@@ -324,7 +324,7 @@ The rebuild is a full 3D game. Translate the old compact top-down composition in
 - Finite cinematic and UI animation (title/hero reveals, boss intros, room/floor transitions, level-up cards, damage feedback, camera easing, pickups) runs on the game clock and ends with its actor or scene. Game simulation and physics remain in the game loop.
 - DOM/CSS may render menus and the HUD above the Three.js canvas. Keep UI layout responsive, keyboard accessible and separate from world state.
 - Preserve existing materials, geometry and commissioned assets. Keep asset provenance in the repo and review historical artwork before importing it.
-- three.js is bundled once into `src/vendor/` from the catalog's pinned commit and built into the game by `tools/build.js`. Commit package.json and package-lock.json, never node_modules. Do not load packages from a CDN or duplicate library files.
+- three.js is bundled once into `src/vendor/` from a checkout of mrdoob/three.js (see `tools/bundle-three.sh`) and built into the game by `tools/build.js`. Commit package.json and package-lock.json, never node_modules. Do not load packages from a CDN or duplicate library files.
 
 ## 13. Historical milestone order
 

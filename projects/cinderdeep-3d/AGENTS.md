@@ -1,12 +1,12 @@
 # Working on Cinderdeep 3D
 
-This is the one Cinderdeep game. It combines every earlier version: the 3D game built from the 2D Cinderdeep, its sprite rig and 3D models (`../sprite-rig/`), and the world work from the CinderDeep rebuilds. Earlier versions are archived (see `../../VERSION_HISTORY.md`); never continue one, copy one, or start a new game.
+This is the one Cinderdeep game. It combines every earlier version: the 3D game built from the 2D Cinderdeep, its sprite rig and 3D models (`../sprite-rig/`), and the world work from the CinderDeep rebuilds. Earlier versions are archived (see `../../docs/archive/VERSION_HISTORY.md`); never continue one, copy one, or start a new game.
 
-Before working: run `python3 ../../tools/check_active_version.py`, then read `README.md`, `3D-PLAN.md`, `GAMEPLAY_SPEC.md` and `SYSTEMS_CATALOG.md`. `GAMEPLAY_SPEC.md` is the product contract; if descriptions conflict, its "Current life and progression rules" section wins.
+Before working, read `README.md`, `3D-PLAN.md`, `GAMEPLAY_SPEC.md` and `SYSTEMS_CATALOG.md`. `GAMEPLAY_SPEC.md` is the product contract; if descriptions conflict, its "Current life and progression rules" section wins.
 
 ## Rules
 
-- Work in `projects/cinderdeep-3d/` and `projects/sprite-rig/` only. Do not touch the upstream catalog or run `git submodule update`.
+- Work in `projects/cinderdeep-3d/` and `projects/sprite-rig/` only.
 - Edit `src/` only, then `npm run build`. Never edit `Cinderdeep3D.html` by hand.
 - The 3D models live once, in `../sprite-rig/src/kit/`. The game builds them in; never copy them into the game.
 - Every step is one finished change: add a scenario to `tests/scenarios.js`, run `npm test` (all scenarios, including the soak's frame budget), and never skip or weaken a test.

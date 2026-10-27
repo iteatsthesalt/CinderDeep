@@ -1,6 +1,5 @@
 #!/bin/sh
-# Rebuilds src/vendor/three.min.js from the three.js commit pinned in the
-# CinderDeep catalog (iteatsthesalt/CinderDeep, upstream/mrdoob/three.js).
+# Rebuilds src/vendor/three.min.js from a checkout of mrdoob/three.js.
 #   tools/bundle-three.sh /path/to/three.js-checkout
 # Needs Node; fetches esbuild with npx. Add classes to tools/three-entry.js first.
 set -e

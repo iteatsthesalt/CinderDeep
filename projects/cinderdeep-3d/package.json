@@ -3,7 +3,6 @@
   "private": true,
   "description": "Cinderdeep in 3D, a single-file browser roguelite, built from src/",
   "scripts": {
-    "prebuild": "python3 ../../tools/check_active_version.py",
     "build": "node tools/build.js",
     "check": "node tools/build.js --check",
     "test": "node tools/build.js --check && node tests/run.js"

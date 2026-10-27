@@ -1,21 +1,8 @@
-# CinderDeep development
+# CinderDeep
 
-Read `RESTART_HERE.md` for the previous session's stopping point and unresolved context.
-The user paused development; follow the new task rather than automatically running a backlog.
+There are two games' worth of code here and no more: Cinderdeep 3D (`projects/cinderdeep-3d/`, with the models in `projects/sprite-rig/`) and its 2D template (`projects/cinderdeep-2d-template/`).
 
-The only active development line is `main`; the game is in `projects/cinderdeep-3d/`.
-Read `ACTIVE_VERSION.json` and `VERSION_HISTORY.md` before making changes.
-Run `python3 tools/check_active_version.py` before installation, development, or commits.
-Install persistent hooks with `PYTHONDONTWRITEBYTECODE=1 python3 tools/install_version_hooks.py`.
-Cloud tasks already have isolated checkouts; do not create a Git worktree unless requested.
-
-Continue the existing game. Preserve source, models, saves, and uncommitted work.
-Do not restart from an empty tree or follow historical fresh-build prompts. The product
-rules in GAMEPLAY_SPEC.md and SYSTEMS_CATALOG.md still apply; their original clean-build
-framing has been superseded by this consolidation.
-
-Branches and tags listed as archived are reference/recovery material, not development targets.
-Never reset, force-push, or blindly switch another agent's checkout. Preserve its work and
-port reviewed changes onto current main. A feature branch must descend from current main.
-Do not initialize or edit the unrelated upstream catalog for game development.
-Do not claim communication with another chat or recovery of generated assets without evidence.
+- Continue the existing game on `main`. Do not rebuild it, fork it into a second folder, or restore archived copies.
+- Read `projects/cinderdeep-3d/AGENTS.md` before editing the 3D game. Edit `src/`, run `npm run build` and `npm test`; never edit a built `.html` by hand.
+- The 2D template is a reference for conversion work. Don't add features to it that the 3D game doesn't need.
+- Trigger is a separate repository. Do not copy it here.

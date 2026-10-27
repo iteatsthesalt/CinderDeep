@@ -1,5 +1,4 @@
 # Continue the one CinderDeep game
 
-Use main and projects/cinderdeep-3d. Read AGENTS.md (here and at the repository root), README.md and 3D-PLAN.md.
-Run python3 ../../tools/check_active_version.py. The game already exists: edit src/, run npm run build and npm test.
-Do not recreate it, continue an archived branch, or initialize upstream submodules.
+Use main and projects/cinderdeep-3d. Read AGENTS.md, README.md and 3D-PLAN.md.
+Do not recreate it, or continue an archived branch.

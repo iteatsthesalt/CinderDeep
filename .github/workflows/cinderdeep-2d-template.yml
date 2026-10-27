@@ -1,0 +1,20 @@
+name: Cinderdeep 2D template
+on:
+  push:
+    paths: ['projects/cinderdeep-2d-template/**', '.github/workflows/cinderdeep-2d-template.yml']
+  pull_request:
+    paths: ['projects/cinderdeep-2d-template/**', '.github/workflows/cinderdeep-2d-template.yml']
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/cinderdeep-2d-template
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npm test

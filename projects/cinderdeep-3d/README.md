@@ -1,6 +1,6 @@
 # Cinderdeep 3D
 
-The one Cinderdeep game. Every session, routine and AI works here, on `main`; see `../../AGENTS.md`.
+The one Cinderdeep game. Every session, routine and AI works here, on `main`; see `AGENTS.md` here and at the repository root.
 
 Cinderdeep drawn entirely in 3D. Open `Cinderdeep3D.html` in a browser with WebGL to play; nothing else is needed. It began as the 2D Cinderdeep with every 2D drawing path removed: the dungeons, the dungeons inside the Realm and the Realm itself are all three.js scenes.
 
@@ -50,7 +50,7 @@ The same check and tests run on GitHub for every change under `projects/cinderde
 - **Light.** The ten nearest light sources (torches, lamps, lava, spells, the hero) are point lights, over ambient light set by the region's darkness or the Realm's time of day. Distance fades into the dark below ground and into a haze in the Realm that darkens with the night. In the dark, hot colours on cards and floors (fire, lava, lit windows, eyes, magic) glow by themselves.
 - **Glow and colour.** The scene is drawn off-screen, its bright parts are blurred at a quarter and an eighth of the size and added back, then highlights are rolled off softly with a vignette. Settings can turn it off; low effects turn it off too.
 
-three.js comes from this repository's catalog, at the commit it pins for `upstream/mrdoob/three.js`. Only the classes listed in `tools/three-entry.js` are bundled. To add one, list it there and run `tools/bundle-three.sh /path/to/three.js` against a checkout of that commit.
+three.js is vendored from [mrdoob/three.js](https://github.com/mrdoob/three.js). Only the classes listed in `tools/three-entry.js` are bundled. To add one, list it there and run `tools/bundle-three.sh /path/to/three.js` against a checkout of the three.js version you want.
 
 ## Extending the game
 

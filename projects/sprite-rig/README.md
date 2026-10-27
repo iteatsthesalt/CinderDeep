@@ -14,7 +14,7 @@ npm test                          # build check, then drive the tool headless
 node tests/run.js export reload   # only the scenarios whose names contain these words
 ```
 
-The same check and tests run on GitHub for every change under `Games/8-Way Sprite Rig/` or to the game's three.js bundle.
+The same check and tests run on GitHub for every change under `projects/sprite-rig/` or `projects/cinderdeep-3d/`.
 
 ## Layout
 
@@ -28,7 +28,7 @@ The same check and tests run on GitHub for every change under `Games/8-Way Sprit
   - `02-stage-fx.js`: weather, lightning, rings, coins and the page's boot screen, pointer trail, ripples and panel tilt.
   - `03-rig.js`: the tool: painters, the bake and its material maps, the turntable, playground, radar and atlas, export, and the controls. `RIG` holds the bench's morphs, shading and playground extras; `window.SpriteRig` is a small handle the tests read. Each subject names its 3D model and its real height (`metres`, per preset for beasts and trees).
   - `04-preview-3d.js`: the 3D Model view (`window.Preview3D`): a lit, shadowed three.js scene whose camera matches the rig's own projection, so the model lands exactly where the sprite would. It stands every subject at its real size on a 3D pedestal that takes its shadows, with a grey 1.8 m person beside it for scale.
-- three.js comes from Cinderdeep 3D's own bundle, `Games/Cinderdeep3D/src/vendor/three.min.js`, which the build inlines; the tool and the game draw with the same library.
+- three.js comes from Cinderdeep 3D's own bundle, `projects/cinderdeep-3d/src/vendor/three.min.js`, which the build inlines; the tool and the game draw with the same library.
 - `tests/`: `scenarios.js` holds the scenarios, `helpers.js` is loaded into the page for them, `run.js` runs them.
 - `tools/build.js`: the build. It reads the game's three.js bundle, so build from a full checkout of the repository.
 - `TOOL-PLAN.md`: where the tool is going next, step by step.

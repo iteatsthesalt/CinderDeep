@@ -4,7 +4,7 @@ Owner: Codex. Active project: `projects/cinderdeep-3d/` on current `main`. This 
 
 ## Current status
 
-- The versions are combined into one game. The base is the most complete version (the 3D game with the Realm, the Mycelium, twenty-four elements, the three circles and the sprite rig's models). The world work below was ported into it; the earlier Vite game is archived (see `../../VERSION_HISTORY.md`).
+- The versions are combined into one game. The base is the most complete version (the 3D game with the Realm, the Mycelium, twenty-four elements, the three circles and the sprite rig's models). The world work below was ported into it; the earlier Vite game is archived (see `../../docs/archive/VERSION_HISTORY.md`).
 - Already in the game: branching floors on a 9x9 room grid with loops, rooms of 1x1 to 2x2 cells, start, combat, elite, rest, treasure, shop, shrine, forge, challenge, secret, DMT, exit and boss rooms; region hazards (spikes, toxic, ice, lava); door-safe obstacles with a connectivity check that undoes any layout that cuts a room; and the persistent Realm.
 - Next world increment: walls and floors with relief (see "Walls and floors gain relief" in `3D-PLAN.md`), then more region detail and set pieces.
 
@@ -31,7 +31,7 @@ Build and improve the playable 3D world: room layouts, architecture, traversal, 
 
 ## Validation for world changes
 
-- Run `python3 ../../tools/check_active_version.py`, then `npm run build` and `npm test`. `world: room layouts and region landmarks` generates floors across all four regions and checks landmarks, doors and straight routes; add checks there for new layouts.
+- Run `npm run build` and `npm test`. `world: room layouts and region landmarks` generates floors across all four regions and checks landmarks, doors and straight routes; add checks there for new layouts.
 - Look at the affected rooms in each region in a browser and report what was actually checked.
 
 ## Work log
