@@ -10,6 +10,8 @@ One game family, three folders under `projects/`:
 
 Each folder builds and tests on its own (`npm run build`, `npm test`); the workflows are in `.github/workflows/`.
 
+Guides for working on the games: [A. characters](docs/README-A-characters.md), [B. world](docs/README-B-world.md), [C. enemies, bosses and assets](docs/README-C-enemies-bosses-assets.md). Each covers how to convert, upgrade and create.
+
 `docs/archive/` holds the previous sessions' handoff and version history. The rebuild that preceded the current game is recoverable at commit `0bba4ec`.
 
 Trigger, the Chrono Trigger sequel, lives in its own repository.
