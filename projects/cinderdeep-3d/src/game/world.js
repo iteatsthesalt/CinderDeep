@@ -5,6 +5,7 @@ import { sfx } from '../core/audio.js';
 import { ROOM } from '../render/room.js';
 import { rand, dist } from './util.js';
 import { damageEnemy } from './combat.js';
+import { findHazardPosition } from '../world/room-layout.js';
 
 // Region hazards, pickups, poison zones and interactable stations.
 
@@ -20,10 +21,11 @@ export function buildHazards(g, region, kind, rng) {
   if (kind === 'exit' || kind === 'rest' || kind === 'treasure' || kind === 'shop') return;
   const type = region.hazard, n = kind === 'boss' ? 3 : 2 + Math.floor(rng() * 3), def = HAZ[type];
   for (let i = 0; i < n; i++) {
-    let x, z, tries = 0;
-    do { x = (rng() * 2 - 1) * (ROOM.HX - 3); z = (rng() * 2 - 1) * (ROOM.HZ - 3); tries++; } while (tries < 20 && (Math.hypot(x, z - ROOM.HZ + 2) < 3.5 || g.room.colliders.some((c) => Math.hypot(c.x - x, c.z - z) < 2.5)));
     const r = type === 'lava' ? 1.6 + rng() : type === 'icicle' ? 1.4 : 1.5;
-    const grp = new THREE.Group(); grp.position.set(x, 0.04, z);
+    const position = findHazardPosition(rng, r, g.room.colliders, g.hazards);
+    if (!position) continue;
+    const { x, z } = position;
+    const grp = new THREE.Group(); grp.position.set(x, 0.09, z);
     const disc = new THREE.Mesh(discGeo(), new THREE.MeshBasicMaterial({ color: type === 'lava' ? 0xff4a10 : def.color, transparent: true, opacity: type === 'lava' ? 0.9 : 0.15, depthWrite: false }));
     disc.rotation.x = -Math.PI / 2; disc.scale.setScalar(r); grp.add(disc);
     const spikes = new THREE.Group(); grp.add(spikes);
@@ -65,7 +67,14 @@ export function updateHazards(g, dt) {
   }
 }
 
-export function clearHazards(g) { for (const h of g.hazards) { g.stage.scene.remove(h.grp); } g.hazards.length = 0; }
+export function clearHazards(g) {
+  for (const h of g.hazards) {
+    g.stage.scene.remove(h.grp);
+    h.disc.material.dispose();
+    h.grp.traverse((object) => { if (object.isLight) object.dispose(); });
+  }
+  g.hazards.length = 0;
+}
 
 // ---- Pickups ----
 const PK = {

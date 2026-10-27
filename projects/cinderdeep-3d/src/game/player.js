@@ -10,7 +10,10 @@ export function resolveBounds(g, ent, r) {
   ent.x = clamp(ent.x, -HX + r, HX - r); ent.z = clamp(ent.z, -HZ + r, HZ - r);
   for (const c of g.room.colliders) {
     const dx = ent.x - c.x, dz = ent.z - c.z, d = Math.hypot(dx, dz), min = c.r + r;
-    if (d < min && d > 0.0001) { ent.x = c.x + (dx / d) * min; ent.z = c.z + (dz / d) * min; }
+    if (d < min) {
+      const nx = d > 0.0001 ? dx / d : 1, nz = d > 0.0001 ? dz / d : 0;
+      ent.x = c.x + nx * min; ent.z = c.z + nz * min;
+    }
   }
 }
 

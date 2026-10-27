@@ -23,6 +23,10 @@ have not been located in the fetched Git history; no such files were removed.
 
 ## Status
 
+World update: reproducible room profiles, regional architectural landmarks, clear obstacle
+routes, safer hazard placement and scene-resource cleanup. Run `npm test` for the nine
+world checks; see [WORLD_BUILD_README.md](WORLD_BUILD_README.md) for validation and remaining work.
+
 Implemented: title/select/atlas/chronicle/settings screens, 19 playables, 12 floors across 4 regions with region hazards and the four main bosses, room types (combat, elite, treasure, shop, rest, boss, stairs), level-up passives, beast evolutions (levels 5 and 12), one-life permanent death with memorial, ten-descent counter, account-wide Shared Talent Atlas, versioned local save.
 
 Not yet: gamepad/touch, control remapping, weapon swapping/rarities/forge, relics beyond passives, secrets/shrines/chaos mode, Realm.
