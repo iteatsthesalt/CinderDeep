@@ -8,8 +8,12 @@ Cloud tasks already have isolated checkouts; do not create a Git worktree unless
 
 Continue the existing game. Preserve source, models, saves, and uncommitted work.
 Do not restart from an empty tree or follow historical fresh-build prompts. The product
-rules in GAMEPLAY_SPEC.md and SYSTEMS_CATALOG.md still apply; their original clean-build
-framing has been superseded by this consolidation.
+rules in projects/cinderdeep-3d/docs/GAMEPLAY_SPEC.md and SYSTEMS_CATALOG.md still apply;
+their original clean-build framing has been superseded by this consolidation.
+
+Work is split into three repeating jobs, each with its own README and files: playable
+characters (Claude), the world (ChatGPT/Codex), enemies and assets (the other Claude).
+Read projects/cinderdeep-3d/jobs/README.md before work.
 
 Branches and tags listed as archived are reference/recovery material, not development targets.
 Never reset, force-push, or blindly switch another agent's checkout. Preserve its work and

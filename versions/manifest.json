@@ -132,6 +132,19 @@
       "model_files": [],
       "subject": "Refactor Cinderdeep into modular 3D Three.js codebase",
       "tree": "e8251c2286226188ce70d88f081277cd54568e8d"
+    },
+    {
+      "branch": "claude/cinderdeep-3d-build",
+      "ref": "local only: a checkout in session ccr-c44de517-hmls4q; never pushed",
+      "commit": "af2002e65e635c0de5aeb9ab396bb827f359a454",
+      "archive_tag": null,
+      "snapshot": null,
+      "game_source_files": 42,
+      "model_files": [],
+      "subject": "CinderDeep 3D: twenty-seven enemies, region hazards, four bosses, input fix",
+      "tree": "4ec65b8b1345c37098c9cf796531361ceb2745a6",
+      "adopted_into_main": "5324fe8ea50861c60cf63f80e7a04d14e9c8cefd",
+      "note": "Adopted onto main; its source is the base of the adoption commit. The archive tag could not be pushed from that session (tag pushes refused with HTTP 403)."
     }
   ],
   "scope": "All observed local and remote branch tips and full parent-repository history; upstream submodule content is not embedded."

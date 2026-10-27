@@ -23,19 +23,21 @@ Use the provided Node 24, npm, Python 3 and Git. From the repository root run
 > Continue the existing game on current main in projects/cinderdeep-3d. Read the version
 > register and AGENTS.md. Report your branch and full commit before editing. Preserve
 > code, models, assets, saves and local changes. Inspect existing gameplay before adding
-> features. Follow GAMEPLAY_SPEC.md's CDC-V8 rules, but disregard superseded instructions
-> to rebuild from an empty tree. Build and run the affected workflow after changes.
+> features. Follow docs/GAMEPLAY_SPEC.md's CDC-V8 rules, but disregard superseded instructions
+> to rebuild from an empty tree. If you own one of the jobs in jobs/README.md, follow its
+> "Every run" steps. Build and run the affected workflow after changes.
 
 ## Existing baseline and next work
 
-The adopted baseline includes the 19-playable roster, four regions and bosses, rooms,
-combat, level-ups, Atlas, versioned saves and a room-transition fix. The browser smoke
-check exercised title, selection, life start, enemies, movement, pause and resume.
-This does not certify every hero, boss, progression path or design requirement.
+Main runs the modular systems build (simulation, rendering and UI separated by an event bus)
+carrying the 19-playable roster, beast forms, the Shared Atlas and saves from the earlier
+baseline. `npm run check` validates content and every body. `npm run smoke` drives a whole
+life in Chromium: rooms, combat, level-ups, chests, shop, fountain, stairs, a boss and its
+altar, death, save migration, the Atlas and a beast's evolution. This does not certify
+every hero, boss or design requirement.
 
-Remaining documented work includes controller/touch support, rebinding, expanded weapon
-and relic systems, secrets/chaos content and the Realm. Choose work from the user's task;
-do not restart the complete design sequence automatically. Preserve procedurally authored
+Remaining work is ordered in the three job READMEs under jobs/. Choose work from your job
+or the user's task; do not restart the complete design sequence automatically. Preserve procedurally authored
 models. Locate external-tool job receipts before regenerating previously commissioned assets.
 
 Historical implementations are preserved under archive tags in VERSION_HISTORY.md;

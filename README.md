@@ -1,6 +1,6 @@
 # CinderDeep
 
-**Game development: use `main` and [projects/cinderdeep-3d](projects/cinderdeep-3d/README.md).** Continue the existing game; do not start another rebuild. Read [the version register](VERSION_HISTORY.md) and [start here](CINDERDEEP_3D_START_HERE.md). The catalog below is unrelated to game setup.
+**Game development: use `main` and [projects/cinderdeep-3d](projects/cinderdeep-3d/README.md).** Continue the existing game; do not start another rebuild. Read [the version register](VERSION_HISTORY.md), [start here](CINDERDEEP_3D_START_HERE.md) and [the jobs board](projects/cinderdeep-3d/jobs/README.md). The catalog below is unrelated to game setup.
 
 A collection of 132 public upstream Git repositories, organized by owner and pinned to exact commits. Inventory collected October 25, 2026 (America/New_York); machine-readable retrieval timestamps use UTC.
 

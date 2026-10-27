@@ -14,8 +14,10 @@
     "claude/awesome-archimedes-n6x40j",
     "claude/awesome-archimedes-r9f12k",
     "claude/awesome-archimedes-xk1vxd",
+    "claude/cinderdeep-3d-build",
     "goose/cinderdeep3d-build",
     "update-3d-assets"
   ],
-  "history": "versions/manifest.json"
+  "history": "versions/manifest.json",
+  "jobs": "projects/cinderdeep-3d/jobs/README.md"
 }

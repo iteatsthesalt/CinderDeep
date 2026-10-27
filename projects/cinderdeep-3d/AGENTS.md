@@ -4,7 +4,11 @@ You are continuing the existing CinderDeep 3D game on the active main developmen
 
 ## Read before changing files
 
-Read GAMEPLAY_SPEC.md, SYSTEMS_CATALOG.md and LOCAL_AI_GUIDE.md before implementation. GAMEPLAY_SPEC.md is the product contract. If two historical descriptions conflict, use the CDC-V8 rules in its "Current life and progression rules" section.
+Read docs/GAMEPLAY_SPEC.md, docs/SYSTEMS_CATALOG.md and LOCAL_AI_GUIDE.md before implementation. docs/GAMEPLAY_SPEC.md is the product contract. If two historical descriptions conflict, use the CDC-V8 rules in its "Current life and progression rules" section.
+
+## Jobs and ownership
+
+Work is split into three repeating jobs: playable characters (Claude), the world (ChatGPT/Codex), and enemies and assets (the other Claude). Read jobs/README.md and your job's README before work. Edit your own job's files; make the smallest change in shared files and log it; leave notes in another job's Mailbox instead of editing its files. If you are not one of the three owners, take a task from the user and follow the same rules.
 
 ## Scope and continuity
 
@@ -28,7 +32,7 @@ Read GAMEPLAY_SPEC.md, SYSTEMS_CATALOG.md and LOCAL_AI_GUIDE.md before implement
 
 1. Inspect this folder, read the two project documents, and summarize the implementation steps briefly.
 2. Continue from the existing game in working increments. Inspect implemented systems before adding or replacing anything.
-3. After each milestone, run npm run build and launch the dev server or browser when available. Fix issues before adding more content.
+3. After each step, run npm run check, npm run build and the browser smoke test (npm run smoke with a dev server on port 5199). Fix issues before adding more content.
 4. Follow the current task and continuation guide. Do not launch a fresh rebuild from historical milestone prompts.
 5. Keep package-lock.json committed once dependencies are installed. Do not commit node_modules or dist.
 6. At completion, report what works, how to run it, the remaining limitations, and the files changed.
