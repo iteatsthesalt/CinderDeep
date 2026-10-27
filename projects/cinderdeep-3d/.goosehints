@@ -1,7 +1,0 @@
-# Continue the current CinderDeep game
-
-Use main and projects/cinderdeep-3d. Read ../../ACTIVE_VERSION.json, ../../VERSION_HISTORY.md,
-AGENTS.md and LOCAL_AI_GUIDE.md. Run python3 ../../tools/check_active_version.py.
-The game already exists. Preserve its code, models, assets, saves and local work.
-Do not recreate it from an empty source tree or continue an archived branch.
-Keep the CDC-V8 gameplay rules and Three.js/GSAP architecture. Do not initialize upstream submodules.
