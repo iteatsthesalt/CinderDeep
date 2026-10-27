@@ -321,16 +321,16 @@ The rebuild is a full 3D game. Translate the old compact top-down composition in
 - Convert telegraph circles/arcs/lines to projected ground decals, emissive meshes and animation. Damage areas must align with actual collision.
 - Use physically meaningful height and collision layers; flying monsters, ground hazards, walls, stairs, projectiles, knockback and line attacks must be distinguishable in 3D.
 - Use region palettes, fog, emissive materials, baked/procedural trim and particles. Scale effects to screen-space so smoke, bloom or camera shake never hide attack tells.
-- Use GSAP for finite cinematic and UI animation: title/hero reveals, boss intros, room/floor transitions, level-up cards, damage feedback, camera easing and pickups. Use quickTo/timelines for retargeted values; kill animations when actors/scenes are disposed. Game simulation and physics remain in the game loop.
+- Finite cinematic and UI animation (title/hero reveals, boss intros, room/floor transitions, level-up cards, damage feedback, camera easing, pickups) runs on the game clock and ends with its actor or scene. Game simulation and physics remain in the game loop.
 - DOM/CSS may render menus and the HUD above the Three.js canvas. Keep UI layout responsive, keyboard accessible and separate from world state.
 - Preserve existing materials, geometry and commissioned assets. Keep asset provenance in the repo and review historical artwork before importing it.
-- Use Vite/npm imports for Three.js and GSAP. Commit package.json and package-lock.json after install, never node_modules/dist. Do not load packages from a CDN or duplicate library files.
+- three.js is bundled once into `src/vendor/` from the catalog's pinned commit and built into the game by `tools/build.js`. Commit package.json and package-lock.json, never node_modules. Do not load packages from a CDN or duplicate library files.
 
 ## 13. Historical milestone order
 
 This sequence records the original implementation plan. Continue the existing game; do not repeat its empty-source steps.
 
-1. Empty-source foundation: Vite entry, Three.js scene, GSAP setup, responsive canvas and module boundaries.
+1. Foundation (done): three.js scene, responsive canvas and module boundaries.
 2. New end-to-end dungeon encounter: a new hero, a real 3D room, input, one weapon, telegraphed enemy, damage/death, reward and exit. This is the first code written in the project.
 3. Complete 12-floor roguelite route, room map/types, all four region art/hazards, 4 main bosses, loot and build choices.
 4. Current CDC rules: permanent lives, ten descents, one shared Atlas, per-life Skill circle, per-run DNA and lineage.

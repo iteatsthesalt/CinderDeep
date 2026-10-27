@@ -8,7 +8,7 @@ CinderDeep is a dark fantasy action roguelite about descending through sealed, d
 
 The visual target is stylized low-poly 3D with strong silhouettes, handcrafted dungeon shapes, dramatic perspective and lighting, and a restrained palette of soot, stone, bone, fungus, frost, and molten orange. Preserve the original game's compact arcade readability while adding real volume and depth. Do not use a flat 2D playfield, billboard characters, or a 3D title screen attached to a fake 2D game.
 
-The game runs in a browser. Use Three.js for all world objects and GSAP for intentional animation. Menus and the HUD may use semantic HTML/CSS layered over the WebGL canvas.
+The game runs in a browser. Use Three.js for all world objects; animation runs on the game's own clock. Menus and the HUD may use semantic HTML/CSS layered over the WebGL canvas.
 
 ## 2. Core play loop
 
@@ -150,7 +150,7 @@ Title flow: New Descent, continue living character(s), Shared Talent Atlas, Live
 
 - Region palette and silhouettes: bone/stone/ember in the Ossuary; damp dark stone, glowing mycelium and spores in the Grotto; pale blue ice and crystal in the Frostvault; black rock, magma seams and hot orange light in the Cinder Core.
 - Make a cohesive low-poly model language; use bevels, stacked forms, trim, decals, readable surface relief and warm/cool lighting rather than a plain flat floor with primitive blobs.
-- Use GSAP for short easing, not as a substitute for game simulation or physics. Required uses: title/menu transitions, room/floor transitions, boss-intro sequence, camera follow/shake or ability telegraphs, and level-up/death presentation. Use gsap.quickTo for frequently retargeted numeric camera/UI targets and avoid creating an unlimited tween every frame.
+- Easing is for presentation only, never a substitute for game simulation or physics: title/menu transitions, room/floor transitions, the boss-intro sequence, camera follow and shake, ability telegraphs, and level-up/death presentation. Never start an unbounded animation every frame.
 - Provide synthesized or original placeholder sound for melee, projectile, impact, dash, pickup, room clear and boss cues. Give each region a distinct procedural music mood; include volume settings. The game must remain playable with sound off.
 
 ## 11. Quality bar and first milestone
@@ -163,7 +163,7 @@ The initial playable milestone is historical. Continue and verify the existing i
 - At least two enemy behaviors, enemy telegraphs, damage, hit feedback and defeat.
 - XP pickup and one level-up choice.
 - A door/stairs interaction, a working HUD, pause/resume and game-over flow.
-- A simple but strong art pass with lighting, depth, shadows and GSAP transitions.
+- A simple but strong art pass with lighting, depth, shadows and eased transitions.
 - A clean build and a short run guide.
 
 Then expand in this order: floor-map/room systems; all four regions and bosses; weapon and playable rosters; passive/relic/evolution systems; life/Atlas persistence; input alternatives and polish; Realm.

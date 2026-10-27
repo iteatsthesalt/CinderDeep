@@ -10,13 +10,14 @@ Run `python3 tools/check_active_version.py` from the repository root.
 ```sh
 cd projects/cinderdeep-3d
 npm ci
-npm run dev
-npm run build
+npm run build   # src/ -> Cinderdeep3D.html; open it in a browser to play
+npm test
 ```
 
-The active baseline preserves the 19-playable implementation and its room-transition
-fix. Other published versions are preserved in archive tags listed in VERSION_HISTORY.md.
-Their overlapping implementations are reference material, not additional active games.
+This is the one game: every earlier version (the 3D game from Game-Dev-Resources with its
+sprite rig and models, and the CinderDeep rebuilds) is combined here. The sprite rig tool
+and the 3D models are in `projects/sprite-rig/`. Earlier versions are preserved in archive
+tags listed in VERSION_HISTORY.md; they are reference material, not games to work on.
 
 The upstream catalog is unrelated to the game. Do not initialize its submodules.
 Keep existing models and asset provenance. Previously generated external-tool models

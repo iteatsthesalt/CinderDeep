@@ -32,7 +32,7 @@ def check(root):
             if current.returncode:
                 raise ValueError('This checkout is behind or diverges from fetched main. Preserve local work and integrate current main before continuing.')
         workspace = root / manifest['workspace']
-        if not (workspace / 'src/main.js').is_file() or not (workspace / 'package-lock.json').is_file():
+        if not (workspace / 'tools/build.js').is_file() or not (workspace / 'package-lock.json').is_file():
             raise ValueError('The active game source or frozen dependency lock is missing.')
         return manifest
     except (OSError, ValueError, KeyError, subprocess.SubprocessError) as error:

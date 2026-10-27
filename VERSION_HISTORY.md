@@ -1,10 +1,14 @@
 # Version history and recovery
 
-Active development: **main**, game directory **projects/cinderdeep-3d/**.
+Active development: **main**, game directory **projects/cinderdeep-3d/**, sprite rig and 3D models in **projects/sprite-rig/**.
+
+## Combination (2026-10-27)
+
+All Cinderdeep versions are now one game. Base: the most complete version, `Games/Cinderdeep3D` and `Games/8-Way Sprite Rig` from iteatsthesalt/Game-Dev-Resources at `ccr-c44de517-hmls4q` (`b8728de`): the Realm, the Mycelium and twenty-four elements, the three circles, the sprite rig's 3D models, and 17 passing test scenarios. Ported into it from this repository's Vite game: the room profiles (colonnade, crossing, galleries, arena) and each region's landmark. The Vite game's other systems (four regions, bosses, heroes, Atlas, saves) already exist in the base in fuller form, so nothing else was carried over and its source is removed; it stays recoverable at `d056f27` and the archive tags below. The 2D Cinderdeep in Game-Dev-Resources is the template the 3D game was made from and is not developed.
 
 This consolidation continues the existing implementation at `ead68533a3340722144816cf3af56649c0625d87`. It includes the room-transition correction at `ded99d0` and has 19 playable choices, four region definitions, four bosses, Atlas and save systems. Selection was based on source inspection, a frozen install, a successful production build, and a browser smoke check—not commit timestamp. This is a development baseline, not a claim that every design feature is complete.
 
-The other independent implementations are preserved for comparison and recovery. Their unique features have not been merged automatically; replacing overlapping game systems would need deliberate review. Do not resume a historical implementation as a competing game.
+The other independent implementations are preserved for comparison and recovery. Their unique features are combined into the one game (see Combination above). Do not resume a historical implementation as a competing game.
 
 | Previous branch | Preserved commit | Game source files | Archive tag |
 | --- | --- | ---: | --- |
